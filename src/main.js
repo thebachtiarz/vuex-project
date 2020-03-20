@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
+import JQuery from 'jquery'
 
 // ? Helpers
 import CredMng from './third-party/auth/credential-manager.min.js'
@@ -22,12 +23,16 @@ import "admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = AppHelper.apiEndpoint();
 
+// ! Usage
+Vue.prototype.$axios = axios;
+Vue.prototype.$ = JQuery;
+Vue.prototype.$CredMng = CredMng;
+Vue.prototype.$AppHelper = AppHelper;
+
 Vue.config.productionTip = false
 
 new Vue({
-  axios,
   router,
   store,
-  CredMng, AppHelper,
   render: h => h(App)
 }).$mount('#app')
