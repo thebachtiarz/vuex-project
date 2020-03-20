@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import JQuery from 'jquery'
+import VueMeta from "vue-meta";
 
 // ? Helpers
 import CredMng from './third-party/auth/credential-manager.min.js'
@@ -30,6 +31,11 @@ Vue.prototype.$CredMng = CredMng;
 Vue.prototype.$AppHelper = AppHelper;
 
 Vue.config.productionTip = false
+
+Vue.use(VueMeta, {
+  // optional pluginOptions
+  refreshOnceOnNavigation: true
+})
 
 new Vue({
   router,
