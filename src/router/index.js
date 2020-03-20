@@ -14,8 +14,16 @@ const routes = [
     meta: { title: "Login Page" }
   },
   {
+    name: "Register",
+    path: "/register",
+    // component: RegisterPage,
+    meta: { title: "Register Page" }
+  },
+  {
     name: "Home",
-    path: "/home"
+    path: "/home",
+    // component: Home,
+    meta: { title: "Home Page" }
   }
 ]
 

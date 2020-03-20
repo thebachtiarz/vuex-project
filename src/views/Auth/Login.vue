@@ -1,8 +1,6 @@
 <template>
   <div class="login-box">
-    <div class="login-logo text-white">
-      <b>Online Exam</b>&ensp;Apps
-    </div>
+    <div class="login-logo text-white">{{this.$AppHelper.appName()}}</div>
     <div class="card">
       <div class="card-body login-card-body">
         <p class="login-box-msg" id="view-login-msg">Sign in to start your session</p>
@@ -11,7 +9,9 @@
             type="email"
             class="form-control theInput"
             id="input-email"
-            placeholder="E-mail"
+            placeholder="E-Mail"
+            @keyup.enter="gotoPassword"
+            v-model="thisEmail"
           />
           <div class="input-group-append">
             <div class="input-group-text">
@@ -25,6 +25,8 @@
             class="form-control theInput"
             id="input-password"
             placeholder="Password"
+            @keyup.enter="gotoSubmit"
+            v-model="thisPassword"
           />
           <div class="input-group-append">
             <div class="input-group-text">
@@ -38,13 +40,14 @@
               type="submit"
               class="btn btn-primary btn-block text-bold"
               id="input-submit"
+              @click="getCredentials"
             >
               <i class="fas fa-sign-in-alt"></i>&ensp;Masuk
             </button>
           </div>
         </div>
         <p class="mb-0">
-          <router-link :to="{ name: 'Login' }" class="text-center">
+          <router-link :to="{ name: 'Register' }" class="text-center">
             <i class="fas fa-user-plus"></i>&ensp;Daftar
           </router-link>
         </p>
@@ -54,7 +57,193 @@
 </template>
 
 <script>
-export default {};
+import ForgeJs from "@/third-party/library/forgejs.min.js";
+import AwSleep from "@/third-party/helper/await-sleep.min.js";
+export default {
+  name: "Login",
+  created() {
+    if (this.$CredMng.credentialKeyTake()) {
+      this.autoLogin();
+    }
+  },
+  methods: {
+    async getCredentials() {
+      this.inputClear();
+      if (this.thisEmail && this.thisPassword) {
+        this.$("#input-submit").prop("disabled", true);
+        this.$("#view-login-msg").html(
+          this.spanMessage(
+            "success",
+            `Login... <i class="fas fa-spinner fa-pulse"></i>`
+          )
+        );
+        await this.postLogin(
+          this.thisEmail,
+          ForgeJs.encryptPassword(this.thisPassword)
+        );
+      }
+      if (!this.thisEmail) {
+        this.$("#input-email").attr("placeholder", "E-Mail can't be empty");
+        this.inputInValid("#input-email");
+      }
+      if (!this.thisPassword) {
+        this.$("#input-password").attr(
+          "placeholder",
+          "Password can't be empty"
+        );
+        this.inputInValid("#input-password");
+      }
+    },
+    postLogin(email, password) {
+      this.$axios
+        .get(`/airlock/csrf-cookie`, {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          withCredentials: true
+        })
+        .then(() => {
+          this.$axios
+            .post(`/api/auth/login`, {
+              email,
+              password
+            })
+            .then(response => this.loginResponse(response.data))
+            .catch(error => {
+              let err = error.toJSON();
+              this.$("#view-login-msg").html(
+                this.spanMessage("danger", err.message)
+              ),
+                this.$("#input-submit").prop("disabled", false);
+            });
+        })
+        .catch(error => {
+          let err = error.toJSON();
+          this.$("#view-login-msg").html(
+            this.spanMessage("danger", err.message)
+          ),
+            this.$("#input-submit").prop("disabled", false);
+        });
+    },
+    //
+    async autoLogin() {
+      await AwSleep.sleep(1000);
+      this.$("#input-submit").prop("disabled", true);
+      this.$("#view-login-msg").html(
+        this.spanMessage(
+          "success",
+          `Auto Login... <i class="fas fa-spinner fa-pulse"></i>`
+        )
+      );
+      await AwSleep.sleep(2000);
+      await this.$axios
+        .get(`/airlock/csrf-cookie`, {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          withCredentials: true
+        })
+        .then(async () => {
+          await this.$axios
+            .get(`/api/user/me`, this.$CredMng.axiosHeaderToken())
+            .then(async response => {
+              this.$("#view-login-msg").html(
+                this.spanMessage(
+                  "success",
+                  `Welcome Back ${response.data.response_data.name}`
+                )
+              );
+              await AwSleep.sleep(2000);
+              this.$("#view-login-msg").html(
+                this.spanMessage(
+                  "success",
+                  `Please waitt... <i class="fas fa-spinner fa-pulse"></i>`
+                )
+              );
+              await AwSleep.sleep(3000);
+              return this.$router.push({ name: "Home" });
+            })
+            .catch(() => {
+              this.$("#view-login-msg").html(
+                this.spanMessage(
+                  "danger",
+                  "Session has expired, please sign in first"
+                )
+              ),
+                this.$CredMng.credentialKeyRemove(),
+                this.$("#input-submit").prop("disabled", false);
+            });
+        })
+        .catch(error => {
+          let err = error.toJSON();
+          this.$("#view-login-msg").html(
+            this.spanMessage("danger", err.message)
+          ),
+            this.$("#input-submit").prop("disabled", false);
+        });
+    },
+    //
+    async loginResponse(data) {
+      await AwSleep.sleep(1000);
+      if (data.status == "success") {
+        this.$CredMng.credentialKeySave(data.response_data.access_token),
+          this.$("#view-login-msg").html(
+            this.spanMessage(
+              "success",
+              `Welcome ${data.response_data.account_name}`
+            )
+          );
+        await AwSleep.sleep(1000);
+        this.$("#view-login-msg").html(
+          this.spanMessage(
+            "success",
+            `Please waitt... <i class="fas fa-spinner fa-pulse"></i>`
+          )
+        );
+        await AwSleep.sleep(3000);
+        return this.$router.push({ name: "Home" });
+      } else {
+        let error = "";
+        data.message.email
+          ? data.message.email.forEach(
+              msgid => (error += this.spanMessage("info", msgid))
+            )
+          : (error += this.spanMessage("info", data.message));
+        this.$("#view-login-msg").html(error);
+        this.$("#input-submit").prop("disabled", false);
+      }
+    },
+    spanMessage(color, message) {
+      return `<p class="text-bold text-${color}">${message}</p>`;
+    },
+    gotoPassword() {
+      this.$("#input-password").focus();
+    },
+    gotoSubmit() {
+      this.$("#input-submit").click();
+    },
+    inputInValid(goto) {
+      this.$(goto).addClass("is-invalid");
+      this.$(goto).addClass("text-danger");
+    },
+    inputValid(goto) {
+      this.$(goto).addClass("is-valid");
+      this.$(goto).addClass("text-success");
+    },
+    inputClear() {
+      this.$(".theInput").removeClass("is-valid");
+      this.$(".theInput").removeClass("is-invalid");
+      this.$(".theInput").removeClass("text-success");
+      this.$(".theInput").removeClass("text-danger");
+    }
+  },
+  data() {
+    return {
+      thisEmail: "",
+      thisPassword: ""
+    };
+  }
+};
 </script>
 
 <style>

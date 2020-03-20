@@ -33,7 +33,6 @@ Vue.prototype.$AppHelper = AppHelper;
 Vue.config.productionTip = false
 
 Vue.use(VueMeta, {
-  // optional pluginOptions
   refreshOnceOnNavigation: true
 })
 
