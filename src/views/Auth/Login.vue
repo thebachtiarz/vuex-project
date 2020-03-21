@@ -15,7 +15,7 @@
           />
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fas fa-at"></span>
             </div>
           </div>
         </div>
@@ -42,13 +42,13 @@
               id="input-submit"
               @click="getCredentials"
             >
-              <i class="fas fa-sign-in-alt"></i>&ensp;Masuk
+              <i class="fas fa-sign-in-alt"></i>&ensp;Login
             </button>
           </div>
         </div>
         <p class="mb-0">
           <router-link :to="{ name: 'Register' }" class="text-center">
-            <i class="fas fa-user-plus"></i>&ensp;Daftar
+            <i class="fas fa-user-plus"></i>&ensp;Register
           </router-link>
         </p>
       </div>

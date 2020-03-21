@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 // ? Pages
 import LoginPage from "@/views/Auth/Login";
+import RegisterPage from "@/views/Auth/Register";
 
 Vue.use(VueRouter)
 
@@ -16,7 +17,7 @@ const routes = [
   {
     name: "Register",
     path: "/register",
-    // component: RegisterPage,
+    component: RegisterPage,
     meta: { title: "Register Page" }
   },
   {

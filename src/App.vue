@@ -14,10 +14,9 @@ export default {
         amp: true
       },
       bodyAttrs: {
-        class:
-          this.$route.name == "Login"
-            ? "hold-transition login-page bg-gradient-dark"
-            : "sidebar-mini layout-fixed layout-navbar-fixed"
+        class: this.boolBodyClass()
+          ? "hold-transition login-page bg-gradient-dark"
+          : "sidebar-mini layout-fixed layout-navbar-fixed"
       }
     };
   },
@@ -26,17 +25,17 @@ export default {
   },
   methods: {
     classBody() {
-      if (this.$route.name == "Login") {
+      if (this.boolBodyClass()) {
         this.$("body").css("min-height", "511.6px");
-        // if (this.$CredMng.credentialKeyTake()) {
-        //   this.gotoHome();
-        // }
       } else {
         this.$("body").removeAttr("style");
       }
     },
-    gotoHome() {
-      return this.$router.push({ name: "Home" });
+    boolBodyClass() {
+      let routeName = this.$route.name;
+      let arrNameRoute = ["Login", "Register"];
+      let routeCheck = arr => arr.find(r => (r == routeName ? true : false));
+      return routeCheck(arrNameRoute);
     }
   },
   watch: {
