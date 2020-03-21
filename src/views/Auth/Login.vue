@@ -109,21 +109,9 @@ export default {
               password
             })
             .then(response => this.loginResponse(response.data))
-            .catch(error => {
-              let err = error.toJSON();
-              this.$("#view-login-msg").html(
-                this.spanMessage("danger", err.message)
-              ),
-                this.$("#input-submit").prop("disabled", false);
-            });
+            .catch(error => this.catchError(error));
         })
-        .catch(error => {
-          let err = error.toJSON();
-          this.$("#view-login-msg").html(
-            this.spanMessage("danger", err.message)
-          ),
-            this.$("#input-submit").prop("disabled", false);
-        });
+        .catch(error => this.catchError(error));
     },
     //
     async autoLogin() {
@@ -163,24 +151,13 @@ export default {
               await AwSleep.sleep(3000);
               return this.$router.push({ name: "Home" });
             })
-            .catch(() => {
-              this.$("#view-login-msg").html(
-                this.spanMessage(
-                  "danger",
-                  "Session has expired, please sign in first"
-                )
-              ),
-                this.$CredMng.credentialKeyRemove(),
-                this.$("#input-submit").prop("disabled", false);
-            });
+            .catch(
+              error => (
+                this.$CredMng.credentialKeyRemove(), this.catchError(error)
+              )
+            );
         })
-        .catch(error => {
-          let err = error.toJSON();
-          this.$("#view-login-msg").html(
-            this.spanMessage("danger", err.message)
-          ),
-            this.$("#input-submit").prop("disabled", false);
-        });
+        .catch(error => this.catchError(error));
     },
     //
     async loginResponse(data) {
@@ -235,6 +212,11 @@ export default {
       this.$(".theInput").removeClass("is-invalid");
       this.$(".theInput").removeClass("text-success");
       this.$(".theInput").removeClass("text-danger");
+    },
+    catchError(error) {
+      let err = error.toJSON();
+      this.$("#view-login-msg").html(this.spanMessage("danger", err.message));
+      this.$("#input-submit").prop("disabled", false);
     }
   },
   data() {
