@@ -150,12 +150,12 @@ export default {
       let errorMsg = "";
       if (data.name) {
         data.name.forEach(msg => {
-          errorMsg += `${msg}, `;
+          errorMsg += errorMsg ? `, ${msg}` : msg;
         });
       }
       if (data.email) {
         data.email.forEach(msg => {
-          errorMsg += `${msg}, `;
+          errorMsg += errorMsg ? `, ${msg}` : msg;
         });
       }
       return errorMsg;
