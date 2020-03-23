@@ -11,6 +11,7 @@
     "admin-lte": "^3.0.2",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "generate-password": "^1.5.1",
     "jquery": "^3.4.1",
     "jquery.easing": "^1.4.1",
     "node-forge": "^0.9.1",
