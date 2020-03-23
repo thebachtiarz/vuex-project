@@ -55,6 +55,16 @@
           </div>
         </div>
         <p class="messagePassword mt-1"></p>
+        <p
+          class="text-muted font-italic"
+          id="password-generate-button"
+          style="font-size: 15px; display: none"
+        >
+          Confuse?, just
+          <a href="javascript:void(0)" @click="generatePassword">
+            <u>generate password</u>
+          </a>
+        </p>
         <div class="row">
           <div class="col offset-7 col-5">
             <button
@@ -84,15 +94,6 @@ import ForgeJS from "@/third-party/library/forgejs.min.js";
 import AwSleep from "@/third-party/helper/await-sleep.min.js";
 export default {
   name: "Register",
-  created() {
-    let password = PassGen.generate({
-      length: 15,
-      numbers: true,
-      symbols: true,
-      excludeSimilarCharacters: true
-    });
-    console.log(password);
-  },
   methods: {
     postRegister() {
       Swal.fire({
@@ -106,6 +107,7 @@ export default {
       }).then(async result => {
         if (result.value) {
           if (this.boolName && this.boolEmail && this.boolPassword) {
+            // alert("OK");
             this.$("#input-submit").prop("disabled", true);
             await this.postNewMember();
             this.$("#input-submit").prop("disabled", false);
@@ -226,6 +228,7 @@ export default {
     async formFieldPassword() {
       let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
       await AwSleep.sleep(500);
+      this.$("#password-generate-button").show();
       this.passwordWatch();
       if (this.thisPassword.length > 0) {
         if (regex.test(this.thisPassword)) {
@@ -275,6 +278,24 @@ export default {
           }
         }
       }
+    },
+    generatePassword() {
+      let password = PassGen.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+        excludeSimilarCharacters: true
+      });
+      this.thisPassword = password;
+      this.seePassword = true;
+      this.$("#thepassword").removeClass();
+      this.$("#input-password").attr("type", "text");
+      this.$("#thepassword").addClass("fas fa-eye-slash");
+    }
+  },
+  watch: {
+    thisPassword() {
+      this.formFieldPassword();
     }
   },
   data() {
