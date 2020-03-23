@@ -5,6 +5,7 @@ import store from './store'
 import axios from 'axios'
 import JQuery from 'jquery'
 import VueMeta from "vue-meta";
+import Cookies from "js-cookie";
 
 // ? Helpers
 import CredMng from './third-party/auth/credential-manager.min.js'
@@ -26,6 +27,7 @@ axios.defaults.baseURL = AppHelper.apiEndpoint();
 
 // ! Usage
 Vue.prototype.$axios = axios;
+Vue.prototype.$cookies = Cookies;
 Vue.prototype.$ = JQuery;
 Vue.prototype.$CredMng = CredMng;
 Vue.prototype.$AppHelper = AppHelper;
