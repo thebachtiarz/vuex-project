@@ -50,7 +50,7 @@
           />
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-lock"></span>
+              <span class="fas fa-lock" id="thepassword" v-on:click="passwordWatch('true')"></span>
             </div>
           </div>
         </div>
@@ -78,11 +78,21 @@
 </template>
 
 <script>
+import PassGen from "generate-password";
 import Swal from "sweetalert2";
 import ForgeJS from "@/third-party/library/forgejs.min.js";
 import AwSleep from "@/third-party/helper/await-sleep.min.js";
 export default {
   name: "Register",
+  created() {
+    let password = PassGen.generate({
+      length: 15,
+      numbers: true,
+      symbols: true,
+      excludeSimilarCharacters: true
+    });
+    console.log(password);
+  },
   methods: {
     postRegister() {
       Swal.fire({
@@ -216,6 +226,7 @@ export default {
     async formFieldPassword() {
       let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
       await AwSleep.sleep(500);
+      this.passwordWatch();
       if (this.thisPassword.length > 0) {
         if (regex.test(this.thisPassword)) {
           this.boolPassword = true;
@@ -239,6 +250,30 @@ export default {
           "error",
           "Password cannot be empty"
         );
+        this.$("#thepassword").removeClass();
+        this.$("#thepassword").addClass("fas fa-lock");
+      }
+    },
+    passwordWatch(action = "") {
+      if (this.thisPassword.length > 0) {
+        this.$("#thepassword").removeClass();
+        if (this.seePassword) {
+          if (action) {
+            this.seePassword = false;
+            this.$("#input-password").attr("type", "password");
+            this.$("#thepassword").addClass("fas fa-eye");
+          } else {
+            this.$("#thepassword").addClass("fas fa-eye-slash");
+          }
+        } else {
+          if (action) {
+            this.seePassword = true;
+            this.$("#input-password").attr("type", "text");
+            this.$("#thepassword").addClass("fas fa-eye-slash");
+          } else {
+            this.$("#thepassword").addClass("fas fa-eye");
+          }
+        }
       }
     }
   },
@@ -249,7 +284,8 @@ export default {
       thisPassword: "",
       boolName: false,
       boolEmail: false,
-      boolPassword: false
+      boolPassword: false,
+      seePassword: false
     };
   }
 };
