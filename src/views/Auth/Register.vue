@@ -4,12 +4,13 @@
     <div class="card">
       <div class="card-body login-card-body">
         <p class="login-box-msg" id="view-login-msg">Create new Member</p>
-        <div class="input-group mb-3">
+        <div class="input-group">
           <input
             type="text"
             class="form-control theInput"
             id="input-name"
             placeholder="Full Name"
+            @keyup="formFieldName"
             @keyup.enter="gotoEmail"
             v-model="thisName"
           />
@@ -19,12 +20,14 @@
             </div>
           </div>
         </div>
-        <div class="input-group mb-3">
+        <p class="messageName mt-1"></p>
+        <div class="input-group">
           <input
             type="email"
             class="form-control theInput"
             id="input-email"
             placeholder="E-Mail"
+            @keyup="formFieldEmail"
             @keyup.enter="gotoPassword"
             v-model="thisEmail"
           />
@@ -34,12 +37,14 @@
             </div>
           </div>
         </div>
-        <div class="input-group mb-3">
+        <p class="messageEmail mt-1"></p>
+        <div class="input-group">
           <input
             type="password"
             class="form-control theInput"
             id="input-password"
             placeholder="Password"
+            @keyup="formFieldPassword"
             @keyup.enter="gotoSubmit"
             v-model="thisPassword"
           />
@@ -49,6 +54,7 @@
             </div>
           </div>
         </div>
+        <p class="messagePassword mt-1"></p>
         <div class="row">
           <div class="col offset-7 col-5">
             <button
@@ -74,6 +80,7 @@
 <script>
 import Swal from "sweetalert2";
 import ForgeJS from "@/third-party/library/forgejs.min.js";
+import AwSleep from "@/third-party/helper/await-sleep.min.js";
 export default {
   name: "Register",
   methods: {
@@ -88,14 +95,14 @@ export default {
         confirmButtonText: "Yes, im sure!"
       }).then(async result => {
         if (result.value) {
-          if (this.thisPassword.length > 5) {
+          if (this.boolName && this.boolEmail && this.boolPassword) {
             this.$("#input-submit").prop("disabled", true);
             await this.postNewMember();
             this.$("#input-submit").prop("disabled", false);
           } else {
             Swal.fire(
               "Waitt!",
-              "Password must be more than 5 characters.",
+              "Your credentials aren't correct yet.",
               "warning"
             );
           }
@@ -159,13 +166,90 @@ export default {
         });
       }
       return errorMsg;
+    },
+    setFieldMessage(goto, status, message) {
+      this.$(`${goto}`).css(
+        "color",
+        `${status == "success" ? "#119822" : "#C91E1E"}`
+      );
+      this.$(`${goto}`).html(message);
+    },
+    clearFieldMessage(goto) {
+      this.$(`${goto}`).html("");
+    },
+    async formFieldName() {
+      let regex = /^[a-zA-Z_\s]+$/i;
+      await AwSleep.sleep(500);
+      if (this.thisName.length > 0) {
+        if (regex.test(this.thisName)) {
+          this.boolName = true;
+          this.setFieldMessage(".messageName", "success", "Name is correct");
+        } else {
+          this.boolName = false;
+          this.setFieldMessage(".messageName", "error", "Name format is wrong");
+        }
+      } else {
+        this.boolName = false;
+        this.setFieldMessage(".messageName", "error", "Name cannot be empty");
+      }
+    },
+    async formFieldEmail() {
+      let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      await AwSleep.sleep(500);
+      if (this.thisEmail.length > 0) {
+        if (regex.test(this.thisEmail)) {
+          this.boolEmail = true;
+          this.setFieldMessage(".messageEmail", "success", "Email is correct");
+        } else {
+          this.boolEmail = false;
+          this.setFieldMessage(
+            ".messageEmail",
+            "error",
+            "Email format is wrong"
+          );
+        }
+      } else {
+        this.boolEmail = false;
+        this.setFieldMessage(".messageEmail", "error", "Email cannot be empty");
+      }
+    },
+    async formFieldPassword() {
+      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+      await AwSleep.sleep(500);
+      if (this.thisPassword.length > 0) {
+        if (regex.test(this.thisPassword)) {
+          this.boolPassword = true;
+          this.setFieldMessage(
+            ".messagePassword",
+            "success",
+            "You have strong and correct password"
+          );
+        } else {
+          this.boolPassword = false;
+          this.setFieldMessage(
+            ".messagePassword",
+            "error",
+            "Password must be between 8 to 15 characters which containing at least one lowercase letter, one uppercase letter, one numeric number, and one special character"
+          );
+        }
+      } else {
+        this.boolPassword = false;
+        this.setFieldMessage(
+          ".messagePassword",
+          "error",
+          "Password cannot be empty"
+        );
+      }
     }
   },
   data() {
     return {
       thisName: "",
       thisEmail: "",
-      thisPassword: ""
+      thisPassword: "",
+      boolName: false,
+      boolEmail: false,
+      boolPassword: false
     };
   }
 };
