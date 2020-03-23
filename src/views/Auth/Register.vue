@@ -123,7 +123,7 @@ export default {
     },
     async postNewMember() {
       this.$axios
-        .get(`/airlock/csrf-cookie`, {
+        .get(`/sanctum/csrf-cookie`, {
           headers: { "X-Requested-With": "XMLHttpRequest" },
           withCredentials: true
         })

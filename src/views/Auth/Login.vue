@@ -96,7 +96,7 @@ export default {
     },
     postLogin(email, password) {
       this.$axios
-        .get(`/airlock/csrf-cookie`, {
+        .get(`/sanctum/csrf-cookie`, {
           headers: {
             "X-Requested-With": "XMLHttpRequest"
           },
@@ -125,7 +125,7 @@ export default {
       );
       await AwSleep.sleep(2000);
       await this.$axios
-        .get(`/airlock/csrf-cookie`, {
+        .get(`/sanctum/csrf-cookie`, {
           headers: {
             "X-Requested-With": "XMLHttpRequest"
           },
