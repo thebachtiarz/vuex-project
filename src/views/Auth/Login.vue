@@ -129,7 +129,7 @@ export default {
         .get(`/sanctum/csrf-cookie`)
         .then(async () => {
           await this.$axios
-            .get(`/api/user/me`, this.$CredMng.axiosHeaderToken())
+            .get(`/api/auth/creds`, this.$CredMng.axiosHeaderToken())
             .then(async response => {
               this.$("#view-login-msg").html(
                 this.spanMessage(
