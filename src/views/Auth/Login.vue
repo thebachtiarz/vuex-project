@@ -34,8 +34,14 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col offset-7 col-5">
+        <div class="row mb-3">
+          <div class="col-7">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember" v-model="thisRemember" />
+              <label for="remember">Remember Me</label>
+            </div>
+          </div>
+          <div class="col-5">
             <button
               type="submit"
               class="btn btn-primary btn-block text-bold"
@@ -96,12 +102,7 @@ export default {
     },
     postLogin(email, password) {
       this.$axios
-        .get(`/sanctum/csrf-cookie`, {
-          headers: {
-            "X-Requested-With": "XMLHttpRequest"
-          },
-          withCredentials: true
-        })
+        .get(`/sanctum/csrf-cookie`)
         .then(() => {
           this.$axios
             .post(`/api/auth/login`, {
@@ -125,12 +126,7 @@ export default {
       );
       await AwSleep.sleep(2000);
       await this.$axios
-        .get(`/sanctum/csrf-cookie`, {
-          headers: {
-            "X-Requested-With": "XMLHttpRequest"
-          },
-          withCredentials: true
-        })
+        .get(`/sanctum/csrf-cookie`)
         .then(async () => {
           await this.$axios
             .get(`/api/user/me`, this.$CredMng.axiosHeaderToken())
@@ -163,7 +159,10 @@ export default {
     async loginResponse(data) {
       await AwSleep.sleep(1000);
       if (data.status == "success") {
-        this.$CredMng.credentialKeySave(data.response_data.access_token),
+        this.$CredMng.credentialKeySave(
+          data.response_data.access_token,
+          this.thisRemember
+        ),
           this.$("#view-login-msg").html(
             this.spanMessage(
               "success",
@@ -222,7 +221,8 @@ export default {
   data() {
     return {
       thisEmail: "",
-      thisPassword: ""
+      thisPassword: "",
+      thisRemember: false
     };
   }
 };

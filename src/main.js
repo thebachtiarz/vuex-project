@@ -24,6 +24,7 @@ import "admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js";
 // ! Config
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = AppHelper.apiEndpoint();
+axios.defaults.headers = { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" };
 
 // ! Usage
 Vue.prototype.$axios = axios;
