@@ -8,8 +8,9 @@ import VueMeta from "vue-meta";
 import Cookies from "js-cookie";
 
 // ? Helpers
-import CredMng from './third-party/auth/credential-manager.min.js'
-import AppHelper from './third-party/helper/app-helper.min.js'
+import CredMng from '@/third-party/auth/credential-manager.min.js'
+import AppHelper from '@/third-party/helper/app-helper.min.js'
+import AuthMid from '@/third-party/auth/auth-middleware.js'
 
 // ? Admin LTE
 import "admin-lte/plugins/fontawesome-free/css/all.min.css";
@@ -32,6 +33,7 @@ Vue.prototype.$cookies = Cookies;
 Vue.prototype.$ = JQuery;
 Vue.prototype.$CredMng = CredMng;
 Vue.prototype.$AppHelper = AppHelper;
+Vue.prototype.$AuthMid = AuthMid;
 
 Vue.config.productionTip = false
 

@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+// ? Auth
+import LoginPage from '@/views/Auth/Login';
+import RegisterPage from '@/views/Auth/Register';
+
 // ? Pages
-import LoginPage from "@/views/Auth/Login";
-import RegisterPage from "@/views/Auth/Register";
+import Home from '@/views/Page/Home'
 
 Vue.use(VueRouter)
 
@@ -21,10 +24,25 @@ const routes = [
     meta: { title: "Register Page" }
   },
   {
-    name: "Home",
     path: "/home",
-    // component: Home,
-    meta: { title: "Home Page" }
+    component: Home,
+    children: [
+      {
+        name: "Home",
+        path: "/",
+        meta: { title: "Home Page" },
+      },
+      {
+        name: "Profile",
+        path: "/user/profile",
+        meta: { title: "Profile Page" },
+      },
+      {
+        name: "About",
+        path: "/about",
+        meta: { title: "About Page" },
+      }
+    ]
   }
 ]
 

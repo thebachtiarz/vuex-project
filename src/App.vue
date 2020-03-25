@@ -21,9 +21,18 @@ export default {
     };
   },
   created() {
+    this.authCheckMiddleware();
     this.classBody();
   },
   methods: {
+    authCheckMiddleware() {
+      let arrNameRoute = this.$AuthMid.getRouteAuthProtected();
+      let routeCheck = arr =>
+        arr.find(r => (r == this.routeName ? true : false));
+      if (routeCheck(arrNameRoute)) {
+        this.$AuthMid.boolCheck();
+      }
+    },
     classBody() {
       if (this.boolBodyClass()) {
         this.$("body").css("min-height", "511.6px");
@@ -32,16 +41,22 @@ export default {
       }
     },
     boolBodyClass() {
-      let routeName = this.$route.name;
       let arrNameRoute = ["Login", "Register"];
-      let routeCheck = arr => arr.find(r => (r == routeName ? true : false));
+      let routeCheck = arr =>
+        arr.find(r => (r == this.routeName ? true : false));
       return routeCheck(arrNameRoute);
     }
   },
   watch: {
     $route() {
       this.classBody();
+      this.routeName = this.$route.name;
     }
+  },
+  data() {
+    return {
+      routeName: this.$route.name
+    };
   }
 };
 </script>
