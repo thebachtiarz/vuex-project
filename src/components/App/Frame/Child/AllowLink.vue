@@ -47,12 +47,12 @@ export default {
     appSignout() {
       Swal.fire({
         title: "Are you sure ?",
-        text: "We will miss you",
+        text: "It will close session from this app",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Sure!",
+        confirmButtonText: "Yes, im Sure!",
         cancelButtonText: "Cancel"
       }).then(async result => {
         if (result.value) {
