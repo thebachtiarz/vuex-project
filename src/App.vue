@@ -41,7 +41,7 @@ export default {
       }
     },
     boolBodyClass() {
-      let arrNameRoute = ["Login", "Register"];
+      let arrNameRoute = this.$AuthMid.getRouteUnprotected();
       let routeCheck = arr =>
         arr.find(r => (r == this.routeName ? true : false));
       return routeCheck(arrNameRoute);

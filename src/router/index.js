@@ -3,10 +3,13 @@ import VueRouter from 'vue-router'
 
 // ? Auth
 import LoginPage from '@/views/Auth/Login';
+import ForgetPasswordPage from '@/views/Auth/ForgetPassword';
+import RecoverPasswordPage from '@/views/Auth/RecoverPassword';
 import RegisterPage from '@/views/Auth/Register';
+import RegisterVerifyPage from '@/views/Auth/RegisterVerify';
 
 // ? Pages
-import Home from '@/views/Page/Home'
+import HomePage from '@/views/Page/Home'
 
 Vue.use(VueRouter)
 
@@ -18,14 +21,32 @@ const routes = [
     meta: { title: "Login Page" }
   },
   {
+    name: "ForgetPassword",
+    path: "/lost-password",
+    component: ForgetPasswordPage,
+    meta: { title: "Lost Password" }
+  },
+  {
+    name: "RecoverPassword",
+    path: "/lost-password/recovery/:access",
+    component: RecoverPasswordPage,
+    meta: { title: "Recover Password" }
+  },
+  {
     name: "Register",
     path: "/register",
     component: RegisterPage,
     meta: { title: "Register Page" }
   },
   {
+    name: "RegisterVerify",
+    path: "/register/verify/:access",
+    component: RegisterVerifyPage,
+    meta: { title: "Verifiying Email" }
+  },
+  {
     path: "/home",
-    component: Home,
+    component: HomePage,
     children: [
       {
         name: "Home",

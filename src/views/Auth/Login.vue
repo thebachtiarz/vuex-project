@@ -52,9 +52,14 @@
             </button>
           </div>
         </div>
+        <p class="mb-1">
+          <router-link :to="{ name: 'ForgetPassword' }" class="text-center">
+            <i class="fas fa-user-injured"></i>&ensp;I forgot my password
+          </router-link>
+        </p>
         <p class="mb-0">
           <router-link :to="{ name: 'Register' }" class="text-center">
-            <i class="fas fa-user-plus"></i>&ensp;Register
+            <i class="fas fa-user-plus"></i>&ensp;Register a new membership
           </router-link>
         </p>
       </div>

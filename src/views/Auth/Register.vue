@@ -79,7 +79,7 @@
         </div>
         <p class="mb-0">
           <router-link :to="{ name: 'Login' }" class="text-center">
-            <i class="fas fa-sign-in-alt"></i>&ensp;Login
+            <i class="fas fa-sign-in-alt"></i>&ensp;I already have a membership
           </router-link>
         </p>
       </div>
