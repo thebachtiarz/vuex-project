@@ -30,7 +30,6 @@
 <script>
 import { mapGetters } from "vuex";
 import Swal from "sweetalert2";
-import AwSleep from "@/third-party/helper/await-sleep.min.js";
 import Toastr from "@/third-party/library/toastrjs.min.js";
 export default {
   name: "AllowLink",
@@ -57,11 +56,21 @@ export default {
         cancelButtonText: "Cancel"
       }).then(async result => {
         if (result.value) {
-          this.$CredMng.credentialKeyRemove();
-          // remove too credential in database
-          await Toastr.toastSuccess("Successfully Logout");
-          await AwSleep.sleep(2000);
-          return this.$router.push({ name: "Login" });
+          await this.$axios
+            .post(`/api/auth/logout`, {}, this.$CredMng.axiosHeaderToken())
+            .then(async res => {
+              if (res.data.status == "success") {
+                await this.$CredMng.credentialKeyRemove();
+                Toastr.toastSuccess(res.data.message);
+                return this.$router.push({ name: "Login" });
+              } else {
+                Toastr.toastError(res.data.message);
+              }
+            })
+            .catch(err => {
+              let error = err.toJSON();
+              Toastr.toastError(error.message);
+            });
         }
       });
     }
