@@ -28,7 +28,7 @@ const routes = [
   },
   {
     name: "RecoverPassword",
-    path: "/lost-password/recovery/:access",
+    path: "/lost-password/recover/:access",
     component: RecoverPasswordPage,
     meta: { title: "Recover Password" }
   },

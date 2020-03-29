@@ -12,6 +12,7 @@
             class="form-control theInput"
             id="input-email"
             placeholder="E-Mail"
+            @keyup.enter="gotoSubmit"
             v-model="thisEmail"
           />
           <div class="input-group-append">
@@ -22,13 +23,18 @@
         </div>
         <div class="row mb-3">
           <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block text-bold" id="input-submit">
+            <button
+              type="submit"
+              class="btn btn-primary btn-block text-bold"
+              id="input-submit"
+              @click="sendAlertMessage"
+            >
               <i class="fas fa-paper-plane"></i>&ensp;Request new password
             </button>
           </div>
         </div>
         <p class="mb-1">
-          <router-link :to="{ name: 'ForgetPassword' }" class="text-center">
+          <router-link :to="{ name: 'Login' }" class="text-center">
             <i class="fas fa-sign-in-alt"></i>&ensp;Login
           </router-link>
         </p>
@@ -43,8 +49,59 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   name: "ForgetPassword",
+  methods: {
+    sendAlertMessage() {
+      Swal.fire({
+        title: "Request new password?",
+        text: "the request will be sent to your account",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancel!",
+        confirmButtonText: "Yes, send now!"
+      }).then(async result => {
+        if (result.value) {
+          await this.sendRequest();
+        }
+      });
+    },
+    sendRequest() {
+      this.$axios
+        .post(`/api/auth/lost-password`, { email: this.thisEmail })
+        .then(async res => {
+          await Swal.fire(
+            `${res.data.status == "success" ? "Success!" : "Failed!"}`,
+            `${this.responseArrayMessage(res.data.message)}`,
+            `${res.data.status}`
+          );
+          return this.$router.push({ name: "Login" });
+        })
+        .catch(async err => {
+          let error = err.toJSON();
+          await Swal.fire("Oppss!", `${error.message}`, "error");
+        });
+    },
+    responseArrayMessage(data) {
+      let errorMsg = "";
+      if (typeof data === "object") {
+        if (data.email) {
+          data.email.forEach(msg => {
+            errorMsg += errorMsg ? `, ${msg}` : msg;
+          });
+        }
+      } else {
+        errorMsg += data;
+      }
+      return errorMsg;
+    },
+    gotoSubmit() {
+      this.$("#input-submit").click();
+    }
+  },
   data() {
     return {
       thisEmail: ""

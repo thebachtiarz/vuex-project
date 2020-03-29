@@ -107,7 +107,6 @@ export default {
       }).then(async result => {
         if (result.value) {
           if (this.boolName && this.boolEmail && this.boolPassword) {
-            // alert("OK");
             this.$("#input-submit").prop("disabled", true);
             await this.postNewMember();
             this.$("#input-submit").prop("disabled", false);
