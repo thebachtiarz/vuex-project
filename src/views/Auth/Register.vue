@@ -103,7 +103,7 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         cancelButtonText: "Cancel!",
-        confirmButtonText: "Yes, im sure!"
+        confirmButtonText: "Yes, Im sure!"
       }).then(async result => {
         if (result.value) {
           if (this.boolName && this.boolEmail && this.boolPassword) {
@@ -122,10 +122,7 @@ export default {
     },
     async postNewMember() {
       this.$axios
-        .get(`/sanctum/csrf-cookie`, {
-          headers: { "X-Requested-With": "XMLHttpRequest" },
-          withCredentials: true
-        })
+        .get(`/sanctum/csrf-cookie`)
         .then(() => {
           this.$axios
             .post(`/api/auth/register`, {

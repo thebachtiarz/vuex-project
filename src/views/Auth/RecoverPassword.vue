@@ -68,19 +68,21 @@ export default {
   },
   methods: {
     checkAccess() {
-      this.$axios
-        .post(`/api/auth/lost-password/access`, { _access: this.tokenAccess })
-        .then(res => {
-          if (res.data.status == "error") {
-            Toastr.toastError(res.data.message);
+      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+        this.$axios
+          .post(`/api/auth/lost-password/access`, { _access: this.tokenAccess })
+          .then(res => {
+            if (res.data.status == "error") {
+              Toastr.toastError(res.data.message);
+              AwSleep.redirectTo("Login", 0);
+            }
+          })
+          .catch(err => {
+            let error = err.toJSON();
+            Toastr.toastError(error.message);
             AwSleep.redirectTo("Login", 0);
-          }
-        })
-        .catch(err => {
-          let error = err.toJSON();
-          Toastr.toastError(error.message);
-          AwSleep.redirectTo("Login", 0);
-        });
+          });
+      });
     },
     postSubmitRecover() {
       Swal.fire({
@@ -91,7 +93,7 @@ export default {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         cancelButtonText: "Cancel!",
-        confirmButtonText: "Yes, im sure!"
+        confirmButtonText: "Yes, Im sure!"
       }).then(async result => {
         if (result.value) {
           if (this.boolPassword) {
@@ -109,23 +111,25 @@ export default {
       });
     },
     postNewPassword() {
-      this.$axios
-        .post(`/api/auth/lost-password/recover`, {
-          password: ForgeJs.encryptPassword(this.thisPassword),
-          _access: this.tokenAccess
-        })
-        .then(async res => {
-          await Swal.fire(
-            `${res.data.status == "success" ? "Success!" : "Failed!"}`,
-            `${res.data.message}`,
-            `${res.data.status == "success" ? "success" : "error"}`
-          );
-          return this.$router.push({ name: "Login" });
-        })
-        .catch(err => {
-          let error = err.toJSON();
-          Swal.fire(`Failed!`, `${error.message}`, "error");
-        });
+      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+        this.$axios
+          .post(`/api/auth/lost-password/recover`, {
+            password: ForgeJs.encryptPassword(this.thisPassword),
+            _access: this.tokenAccess
+          })
+          .then(async res => {
+            await Swal.fire(
+              `${res.data.status == "success" ? "Success!" : "Failed!"}`,
+              `${res.data.message}`,
+              `${res.data.status == "success" ? "success" : "error"}`
+            );
+            return this.$router.push({ name: "Login" });
+          })
+          .catch(err => {
+            let error = err.toJSON();
+            Swal.fire(`Failed!`, `${error.message}`, "error");
+          });
+      });
     },
     async formFieldPassword() {
       let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;

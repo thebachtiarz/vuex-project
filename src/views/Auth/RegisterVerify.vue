@@ -28,25 +28,31 @@ export default {
       this.verifyAccess();
     },
     verifyAccess() {
-      this.$axios
-        .post(`/api/access/register/verifys`, { _access: this.tokenAccess })
-        .then(async res => {
-          this.responseMessage(
-            "#process-message",
-            `${res.data.status}`,
-            `${res.data.message}`
-          );
-          await AwSleep.sleep(2000);
-          this.responseMessage("#process-message", `info`, `Redirect`);
-          await AwSleep.redirectTo("Login");
-        })
-        .catch(async err => {
-          let error = err.toJSON();
-          this.responseMessage("#process-message", `error`, `${error.message}`);
-          await AwSleep.sleep(2000);
-          this.responseMessage("#process-message", `info`, `Redirect`);
-          await AwSleep.redirectTo("Login");
-        });
+      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+        this.$axios
+          .post(`/api/access/register/verify`, { _access: this.tokenAccess })
+          .then(async res => {
+            this.responseMessage(
+              "#process-message",
+              `${res.data.status}`,
+              `${res.data.message}`
+            );
+            await AwSleep.sleep(2000);
+            this.responseMessage("#process-message", `info`, `Redirect`);
+            await AwSleep.redirectTo("Login");
+          })
+          .catch(async err => {
+            let error = err.toJSON();
+            this.responseMessage(
+              "#process-message",
+              `error`,
+              `${error.message}`
+            );
+            await AwSleep.sleep(2000);
+            this.responseMessage("#process-message", `info`, `Redirect`);
+            await AwSleep.redirectTo("Login");
+          });
+      });
     },
     responseMessage(goto, status, message) {
       this.$(goto).removeClass();
