@@ -57,13 +57,20 @@ const routes = [
         name: "Profile",
         path: "/user/profile",
         meta: { title: "Profile Page" },
-      },
-      {
-        name: "About",
-        path: "/about",
-        meta: { title: "About Page" },
       }
     ]
+  },
+  {
+    name: "About",
+    path: "/about",
+    // component: AboutPage,
+    meta: { title: "About Us" }
+  },
+  {
+    name: "PageNotFound",
+    path: "*",
+    // component: PageNotFoundPage,
+    meta: { title: "Page Not Found" }
   }
 ]
 

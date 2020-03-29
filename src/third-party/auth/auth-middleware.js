@@ -17,7 +17,7 @@ const AuthMid = {
         return ["Home", "Profile"];
     },
     getRouteUnprotected: () => {
-        return ["Login", "Register", "ForgetPassword", "RecoverPassword", "RegisterVerify"];
+        return ["Login", "Register", "ForgetPassword", "RecoverPassword", "RegisterVerify", "About", "PageNotFound"];
     }
 };
 export default AuthMid;
