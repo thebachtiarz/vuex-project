@@ -35,7 +35,7 @@ export default {
     if (!this.$CredMng.credentialKeyTake()) {
       return await this.$router.push({ name: "Login" });
     } else {
-      //   this.getBiodata();
+      this.getBiodata();
     }
   },
   methods: {

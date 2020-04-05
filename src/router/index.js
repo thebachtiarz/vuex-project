@@ -9,7 +9,8 @@ import RegisterPage from '@/views/Auth/Register';
 import RegisterVerifyPage from '@/views/Auth/RegisterVerify';
 
 // ? Pages
-import HomePage from '@/views/Page/Home'
+import HomePage from '@/views/Page/Home';
+import ProfilePage from '@/views/Page/User/Profile';
 
 Vue.use(VueRouter)
 
@@ -56,6 +57,7 @@ const routes = [
       {
         name: "Profile",
         path: "/user/profile",
+        component: ProfilePage,
         meta: { title: "Profile Page" },
       }
     ]
