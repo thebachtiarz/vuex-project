@@ -48,7 +48,7 @@
                   type="text"
                   class="form-control"
                   id="setting-biodata-name"
-                  :value="thisBiodata.name"
+                  v-model="fullNameBiodata"
                 />
               </div>
               <div class="form-group">
@@ -97,7 +97,7 @@
                   alt="user-profile-image"
                 />
               </div>
-              <button class="btn btn-primary float-right text-bold">
+              <button class="btn btn-primary float-right text-bold" @click="biodataUpdatePost">
                 <i class="fas fa-user-alt"></i>&ensp;Update Biodata
               </button>
             </div>
@@ -130,11 +130,15 @@
 
 <script>
 import { mapGetters } from "vuex";
+import Swal from "sweetalert2";
 import Toastr from "@/third-party/library/toastrjs.min";
 export default {
   name: "ProfilePage",
   computed: {
     ...mapGetters(["thisBiodata"])
+  },
+  created() {
+    this.fullNameBiodata = this.thisBiodata.name;
   },
   methods: {
     autoUploadImageOnChange() {
@@ -169,11 +173,50 @@ export default {
             Toastr.toastError(error.message);
           });
       });
+    },
+    biodataUpdatePost() {
+      Swal.fire({
+        title: "Update your biodata?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancel!",
+        confirmButtonText: "Yes, Update Now!"
+      }).then(async result => {
+        if (result.value) {
+          if (this.fullNameBiodata) {
+            this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+              this.$axios
+                .put(
+                  `/api/user/profile/${this.appTimeNow}/?_update=biodata`,
+                  { name: this.fullNameBiodata, image: this.imageUploadForm },
+                  this.$CredMng.axiosHeaderToken()
+                )
+                .then(res => {
+                  console.log(res.data);
+                })
+                .catch(err => {
+                  console.log(err.data);
+                });
+            });
+          }
+          if (!this.fullNameBiodata) {
+            Swal.fire("Waitt!!", "You cannot leave your name blank", "warning");
+          }
+        }
+      });
+    }
+  },
+  watch: {
+    fullNameBiodata() {
+      this.fullNameBiodata = this.$store.getters.thisBiodata.name;
     }
   },
   data() {
     return {
-      fullNameBiodata: this.$("#setting-biodata-name").val(),
+      appTimeNow: new Date().getTime(),
+      fullNameBiodata: "",
       imageUploadOrigin: "",
       imageUploadForm: "",
       imageUploadResult: ""
