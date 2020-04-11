@@ -18,7 +18,7 @@ let getters = {
 };
 let actions = {
     async getBiodata({ commit }) {
-        axios.get(`/sanctum/csrf-cookie`).then(async () => {
+        await axios.get(`/sanctum/csrf-cookie`).then(async () => {
             let response = await axios.get(`/api/user/profile`, CredMng.axiosHeaderToken())
                 .catch(() => {
                     Toastr.toastError("Please login first!"),

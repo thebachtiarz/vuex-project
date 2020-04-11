@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Swal from "sweetalert2";
 import Toastr from "@/third-party/library/toastrjs.min";
 export default {
@@ -137,10 +137,8 @@ export default {
   computed: {
     ...mapGetters(["thisBiodata"])
   },
-  created() {
-    this.fullNameBiodata = this.thisBiodata.name;
-  },
   methods: {
+    ...mapActions(["getBiodata"]),
     autoUploadImageOnChange() {
       this.$("#setting-biodata-image-submit").click();
     },
@@ -193,11 +191,28 @@ export default {
                   { name: this.fullNameBiodata, image: this.imageUploadForm },
                   this.$CredMng.axiosHeaderToken()
                 )
-                .then(res => {
-                  console.log(res.data);
+                .then(async res => {
+                  if (res.data.status == "success") {
+                    await Swal.fire(
+                      "Success",
+                      `${res.data.message}`,
+                      "success"
+                    );
+                    this.imageUploadOrigin = "";
+                    this.imageUploadForm = "";
+                    this.imageUploadResult = "";
+                    this.getBiodata();
+                  } else {
+                    await Swal.fire(
+                      "Opps!!",
+                      `${this.responseRegisterFailed(res.data.message)}`,
+                      "warning"
+                    );
+                  }
                 })
                 .catch(err => {
-                  console.log(err.data);
+                  let error = err.toJSON();
+                  Swal.fire("Sorry", `${error.message}`, "error");
                 });
             });
           }
@@ -206,17 +221,21 @@ export default {
           }
         }
       });
-    }
-  },
-  watch: {
-    fullNameBiodata() {
-      this.fullNameBiodata = this.$store.getters.thisBiodata.name;
+    },
+    responseRegisterFailed(data) {
+      let errorMsg = "";
+      if (data.name) {
+        data.name.forEach(msg => {
+          errorMsg += errorMsg ? `, ${msg}` : msg;
+        });
+      }
+      return errorMsg;
     }
   },
   data() {
     return {
       appTimeNow: new Date().getTime(),
-      fullNameBiodata: "",
+      fullNameBiodata: this.$store.getters.thisBiodata.name,
       imageUploadOrigin: "",
       imageUploadForm: "",
       imageUploadResult: ""
