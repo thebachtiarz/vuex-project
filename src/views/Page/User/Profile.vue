@@ -39,7 +39,9 @@
         </div>
         <div class="card-body">
           <div class="tab-content">
-            <div class="tab-pane active" id="history">Login History.</div>
+            <div class="tab-pane active" id="history">
+              <p class="text-bold text-center">--- Login History ---</p>
+            </div>
             <div class="tab-pane" id="biodata">
               <p class="text-bold text-center">--- Biodata Management ---</p>
               <div class="form-group">
@@ -104,20 +106,55 @@
             <div class="tab-pane" id="password">
               <p class="text-bold text-center">--- Password Management ---</p>
               <div class="form-group">
-                <input
-                  type="password"
-                  class="form-control"
-                  id="setting-password-current"
-                  placeholder="Current Password"
-                />
-                <input
-                  type="password"
-                  class="form-control mt-3"
-                  id="setting-password-new"
-                  placeholder="New Password"
-                />
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="setting-password-current"
+                    placeholder="Current Password"
+                    @keyup.enter="gotoNewPassword"
+                    v-model="profileOldPassword"
+                  />
+                  <div class="input-group-append">
+                    <div
+                      class="input-group-text"
+                      v-on:click="passwordWatch('#oldpassword', '#setting-password-current')"
+                    >
+                      <span class="fas fa-eye" id="oldpassword"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="input-group mt-3">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="setting-password-new"
+                    placeholder="New Password"
+                    @keyup="formFieldPassword"
+                    v-model="profileNewPassword"
+                  />
+                  <div class="input-group-append">
+                    <div
+                      class="input-group-text"
+                      v-on:click="passwordWatch('#newpassword', '#setting-password-new')"
+                    >
+                      <span class="fas fa-eye" id="newpassword"></span>
+                    </div>
+                  </div>
+                </div>
+                <p class="messagePassword mt-1"></p>
+                <p
+                  class="text-muted font-italic"
+                  id="password-generate-button"
+                  style="font-size: 15px; display: none"
+                >
+                  Confuse?, just
+                  <a href="javascript:void(0)" @click="generatePassword">
+                    <u>generate password</u>
+                  </a>
+                </p>
               </div>
-              <button class="btn btn-primary float-right text-bold">
+              <button class="btn btn-primary float-right text-bold" @click="profileUpdatePassword">
                 <i class="fas fa-key"></i>&ensp;Update Password
               </button>
             </div>
@@ -130,7 +167,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import PassGen from "generate-password";
 import Swal from "sweetalert2";
+import AwSleep from "@/third-party/helper/await-sleep.min";
+import ForgeJs from "@/third-party/library/forgejs.min.js";
 import Toastr from "@/third-party/library/toastrjs.min";
 export default {
   name: "ProfilePage",
@@ -205,7 +245,7 @@ export default {
                   } else {
                     await Swal.fire(
                       "Opps!!",
-                      `${this.responseRegisterFailed(res.data.message)}`,
+                      `${this.responseFailed(res.data.message)}`,
                       "warning"
                     );
                   }
@@ -222,14 +262,154 @@ export default {
         }
       });
     },
-    responseRegisterFailed(data) {
+    profileUpdatePassword() {
+      Swal.fire({
+        title: "Update your password?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancel!",
+        confirmButtonText: "Yes, Update Now!"
+      }).then(async res => {
+        if (res.value) {
+          if (this.profileOldPassword.length > 0) {
+            if (this.profileUpdatePasswordBool) {
+              await this.$axios.get(`/sanctum/csrf-cookie`).then(async () => {
+                await this.$axios
+                  .put(
+                    `/api/user/profile/${this.appTimeNow}/?_update=password`,
+                    {
+                      old_pass: ForgeJs.encryptPassword(
+                        this.profileOldPassword
+                      ),
+                      new_pass: ForgeJs.encryptPassword(this.profileNewPassword)
+                    },
+                    this.$CredMng.axiosHeaderToken()
+                  )
+                  .then(async res => {
+                    if (res.data.status == "success") {
+                      await Swal.fire(
+                        "Success",
+                        `${res.data.message}`,
+                        "success"
+                      );
+                    } else {
+                      await Swal.fire(
+                        "Opps!!",
+                        `${this.responseFailed(res.data.message)}`,
+                        "error"
+                      );
+                    }
+                  })
+                  .catch(err => {
+                    let error = err.toJSON();
+                    Swal.fire("Sorry", `${error.message}`, "error");
+                  });
+              });
+            } else {
+              Swal.fire(
+                "Waitt!",
+                "Your new password format aren't correct yet.",
+                "warning"
+              );
+            }
+          } else {
+            Swal.fire(
+              "Waitt!",
+              "Your must enter your current password.",
+              "warning"
+            );
+          }
+        }
+      });
+    },
+    responseFailed(data) {
       let errorMsg = "";
       if (data.name) {
         data.name.forEach(msg => {
           errorMsg += errorMsg ? `, ${msg}` : msg;
         });
       }
-      return errorMsg;
+      if (data.old_pass) {
+        data.old_pass.forEach(msg => {
+          errorMsg += errorMsg ? `, ${msg}` : msg;
+        });
+      }
+      if (data.new_pass) {
+        data.new_pass.forEach(msg => {
+          errorMsg += errorMsg ? `, ${msg}` : msg;
+        });
+      }
+      return errorMsg ? errorMsg : data;
+    },
+    async formFieldPassword() {
+      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+      await AwSleep.sleep(500);
+      this.$("#password-generate-button").show();
+      this.passwordWatch();
+      if (this.profileNewPassword.length > 0) {
+        if (regex.test(this.profileNewPassword)) {
+          this.profileUpdatePasswordBool = true;
+          this.setFieldMessage(
+            ".messagePassword",
+            "success",
+            "You have strong and correct password"
+          );
+        } else {
+          this.profileUpdatePasswordBool = false;
+          this.setFieldMessage(
+            ".messagePassword",
+            "error",
+            "Password must be between 8 to 15 characters which containing at least one lowercase letter, one uppercase letter, one numeric number, and one special character"
+          );
+        }
+      } else {
+        this.profileUpdatePasswordBool = false;
+        this.setFieldMessage(
+          ".messagePassword",
+          "error",
+          "Password cannot be empty"
+        );
+      }
+    },
+    passwordWatch(toggle, inputform) {
+      let inputtype = this.$(`${inputform}`).attr("type");
+      this.$(`${toggle}`).removeClass();
+      if (inputtype == "password") {
+        this.$(`${inputform}`).attr("type", "text");
+        this.$(`${toggle}`).addClass("fas fa-eye-slash");
+      } else {
+        this.$(`${inputform}`).attr("type", "password");
+        this.$(`${toggle}`).addClass("fas fa-eye");
+      }
+    },
+    generatePassword() {
+      let password = PassGen.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+        excludeSimilarCharacters: true
+      });
+      this.profileNewPassword = password;
+      this.$("#newpassword").removeClass();
+      this.$("#setting-password-new").attr("type", "text");
+      this.$("#newpassword").addClass("fas fa-eye-slash");
+    },
+    setFieldMessage(goto, status, message) {
+      this.$(`${goto}`).css(
+        "color",
+        `${status == "success" ? "#119822" : "#C91E1E"}`
+      );
+      this.$(`${goto}`).html(message);
+    },
+    gotoNewPassword() {
+      this.$("#setting-password-new").focus();
+    }
+  },
+  watch: {
+    profileNewPassword() {
+      this.formFieldPassword();
     }
   },
   data() {
@@ -238,7 +418,10 @@ export default {
       fullNameBiodata: this.$store.getters.thisBiodata.name,
       imageUploadOrigin: "",
       imageUploadForm: "",
-      imageUploadResult: ""
+      imageUploadResult: "",
+      profileOldPassword: "",
+      profileNewPassword: "",
+      profileUpdatePasswordBool: false
     };
   }
 };
