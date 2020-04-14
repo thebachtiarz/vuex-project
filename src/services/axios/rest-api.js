@@ -9,7 +9,8 @@ axios.defaults.headers = { Accept: "application/json", "X-Requested-With": "XMLH
 const RestServices = {
     getCookies: () => axios.get(`/sanctum/csrf-cookie`),
     getCredential: () => axios.get(`/api/auth/creds`, CredMng.axiosHeaderToken()),
-    postLogin: (email, password) => axios.post(`/api/auth/login`, { email, password })
+    postLogin: (email, password) => axios.post(`/api/auth/login`, { email, password }),
+    postRegister: (name, email, password) => axios.post(`/api/auth/register`, { name, email, password })
 };
 
 export default RestServices;

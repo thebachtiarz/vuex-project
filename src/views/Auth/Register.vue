@@ -122,14 +122,14 @@ export default {
     },
     async postNewMember() {
       this.$axios
-        .get(`/sanctum/csrf-cookie`)
+        .getCookies()
         .then(() => {
           this.$axios
-            .post(`/api/auth/register`, {
-              name: this.thisName,
-              email: this.thisEmail,
-              password: ForgeJS.encryptPassword(this.thisPassword)
-            })
+            .postRegister(
+              this.thisName,
+              this.thisEmail,
+              ForgeJS.encryptPassword(this.thisPassword)
+            )
             .then(async res => await this.responseRegister(res.data))
             .catch(err => this.catchError(err));
         })
