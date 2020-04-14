@@ -70,20 +70,22 @@ export default {
       });
     },
     sendRequest() {
-      this.$axios
-        .post(`/api/auth/lost-password`, { email: this.thisEmail })
-        .then(async res => {
-          await Swal.fire(
-            `${res.data.status == "success" ? "Success!" : "Failed!"}`,
-            `${this.responseArrayMessage(res.data.message)}`,
-            `${res.data.status}`
-          );
-          return this.$router.push({ name: "Login" });
-        })
-        .catch(async err => {
-          let error = err.toJSON();
-          await Swal.fire("Oppss!", `${error.message}`, "error");
-        });
+      this.$axios.getCookies().then(() => {
+        this.$axios
+          .postForgetPassword(this.thisEmail)
+          .then(async res => {
+            await Swal.fire(
+              `${res.data.status == "success" ? "Success!" : "Failed!"}`,
+              `${this.responseArrayMessage(res.data.message)}`,
+              `${res.data.status}`
+            );
+            return this.$router.push({ name: "Login" });
+          })
+          .catch(async err => {
+            let error = err.toJSON();
+            await Swal.fire("Oppss!", `${error.message}`, "error");
+          });
+      });
     },
     responseArrayMessage(data) {
       let errorMsg = "";
