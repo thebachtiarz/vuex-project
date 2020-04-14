@@ -107,19 +107,15 @@ export default {
     },
     postLogin(email, password) {
       this.$axios
-        .get(`/sanctum/csrf-cookie`)
+        .getCookies()
         .then(() => {
           this.$axios
-            .post(`/api/auth/login`, {
-              email,
-              password
-            })
+            .postLogin(email, password)
             .then(response => this.loginResponse(response.data))
             .catch(error => this.catchError(error));
         })
         .catch(error => this.catchError(error));
     },
-    //
     async autoLogin() {
       await AwSleep.sleep(1000);
       this.$("#input-submit").prop("disabled", true);
@@ -131,10 +127,10 @@ export default {
       );
       await AwSleep.sleep(2000);
       await this.$axios
-        .get(`/sanctum/csrf-cookie`)
+        .getCookies()
         .then(async () => {
           await this.$axios
-            .get(`/api/auth/creds`, this.$CredMng.axiosHeaderToken())
+            .getCredential()
             .then(async response => {
               this.$("#view-login-msg").html(
                 this.spanMessage(
@@ -160,7 +156,6 @@ export default {
         })
         .catch(error => this.catchError(error));
     },
-    //
     async loginResponse(data) {
       await AwSleep.sleep(1000);
       if (data.status == "success") {

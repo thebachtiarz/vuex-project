@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from 'axios'
 import JQuery from 'jquery'
 import VueMeta from "vue-meta";
 import Cookies from "js-cookie";
@@ -25,19 +24,14 @@ import "admin-lte/plugins/jquery/jquery.min.js";
 import "admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js";
 import "admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js";
 
-// ! Config
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = AppHelper.apiEndpoint();
-axios.defaults.headers = { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" };
 
 // ! Usage
-Vue.prototype.$axios = axios;
+Vue.prototype.$axios = RestServices;
 Vue.prototype.$cookies = Cookies;
 Vue.prototype.$ = JQuery;
 Vue.prototype.$CredMng = CredMng;
 Vue.prototype.$AppHelper = AppHelper;
 Vue.prototype.$AuthMid = AuthMid;
-Vue.prototype.$services = RestServices;
 
 Vue.config.productionTip = false
 
