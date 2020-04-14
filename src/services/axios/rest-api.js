@@ -12,7 +12,9 @@ const RestServices = {
     postLogin: (email, password) => axios.post(`/api/auth/login`, { email, password }),
     postRegister: (name, email, password) => axios.post(`/api/auth/register`, { name, email, password }),
     postVerifyRegister: (_access) => axios.post(`/api/access/register/verify`, { _access }),
-    postForgetPassword: (email) => axios.post(`/api/auth/lost-password`, { email })
+    postLostPassword: (email) => axios.post(`/api/auth/lost-password`, { email }),
+    postLostPasswordAccess: (_access) => axios.post(`/api/auth/lost-password/access`, { _access }),
+    postRecoverPassword: (password, _access) => axios.post(`/api/auth/lost-password/recover`, { password, _access })
 };
 
 export default RestServices;

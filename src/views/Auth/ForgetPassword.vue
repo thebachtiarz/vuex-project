@@ -72,7 +72,7 @@ export default {
     sendRequest() {
       this.$axios.getCookies().then(() => {
         this.$axios
-          .postForgetPassword(this.thisEmail)
+          .postLostPassword(this.thisEmail)
           .then(async res => {
             await Swal.fire(
               `${res.data.status == "success" ? "Success!" : "Failed!"}`,

@@ -68,9 +68,9 @@ export default {
   },
   methods: {
     checkAccess() {
-      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+      this.$axios.getCookies().then(() => {
         this.$axios
-          .post(`/api/auth/lost-password/access`, { _access: this.tokenAccess })
+          .postLostPasswordAccess(this.tokenAccess)
           .then(res => {
             if (res.data.status == "error") {
               Toastr.toastError(res.data.message);
@@ -111,12 +111,12 @@ export default {
       });
     },
     postNewPassword() {
-      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+      this.$axios.getCookies().then(() => {
         this.$axios
-          .post(`/api/auth/lost-password/recover`, {
-            password: ForgeJs.encryptPassword(this.thisPassword),
-            _access: this.tokenAccess
-          })
+          .postRecoverPassword(
+            ForgeJs.encryptPassword(this.thisPassword),
+            this.tokenAccess
+          )
           .then(async res => {
             await Swal.fire(
               `${res.data.status == "success" ? "Success!" : "Failed!"}`,
