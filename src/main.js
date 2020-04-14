@@ -7,6 +7,9 @@ import JQuery from 'jquery'
 import VueMeta from "vue-meta";
 import Cookies from "js-cookie";
 
+// ? Libraries
+import RestServices from '@/services/axios/rest-api'
+
 // ? Helpers
 import CredMng from '@/third-party/auth/credential-manager.min.js'
 import AppHelper from '@/third-party/helper/app-helper.min.js'
@@ -34,6 +37,7 @@ Vue.prototype.$ = JQuery;
 Vue.prototype.$CredMng = CredMng;
 Vue.prototype.$AppHelper = AppHelper;
 Vue.prototype.$AuthMid = AuthMid;
+Vue.prototype.$services = RestServices;
 
 Vue.config.productionTip = false
 
