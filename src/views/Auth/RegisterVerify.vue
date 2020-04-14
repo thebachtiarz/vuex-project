@@ -28,9 +28,9 @@ export default {
       this.verifyAccess();
     },
     verifyAccess() {
-      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+      this.$axios.getCookies().then(() => {
         this.$axios
-          .post(`/api/access/register/verify`, { _access: this.tokenAccess })
+          .postVerifyRegister(this.tokenAccess)
           .then(async res => {
             this.responseMessage(
               "#process-message",

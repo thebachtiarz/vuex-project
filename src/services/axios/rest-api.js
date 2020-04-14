@@ -10,7 +10,8 @@ const RestServices = {
     getCookies: () => axios.get(`/sanctum/csrf-cookie`),
     getCredential: () => axios.get(`/api/auth/creds`, CredMng.axiosHeaderToken()),
     postLogin: (email, password) => axios.post(`/api/auth/login`, { email, password }),
-    postRegister: (name, email, password) => axios.post(`/api/auth/register`, { name, email, password })
+    postRegister: (name, email, password) => axios.post(`/api/auth/register`, { name, email, password }),
+    postVerifyRegister: (_access) => axios.post(`/api/access/register/verify`, { _access })
 };
 
 export default RestServices;
