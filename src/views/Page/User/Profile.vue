@@ -184,16 +184,12 @@ export default {
     },
     uploadImageProfile(e) {
       e.preventDefault();
-      this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+      this.$axios.getCookies().then(() => {
         let formImage = new FormData(
           document.getElementById("setting-biodata-image")
         );
         this.$axios
-          .post(
-            `/api/user/profile?_upload=image`,
-            formImage,
-            this.$CredMng.axiosHeaderToken()
-          )
+          .postNewImageUserProfile(formImage)
           .then(res => {
             if (res.data.status == "success") {
               this.imageUploadOrigin = res.data.response_data[0].origin_name;
@@ -224,12 +220,12 @@ export default {
       }).then(async result => {
         if (result.value) {
           if (this.fullNameBiodata) {
-            this.$axios.get(`/sanctum/csrf-cookie`).then(() => {
+            this.$axios.getCookies().then(() => {
               this.$axios
-                .put(
-                  `/api/user/profile/${this.appTimeNow}/?_update=biodata`,
-                  { name: this.fullNameBiodata, image: this.imageUploadForm },
-                  this.$CredMng.axiosHeaderToken()
+                .patchUserBiodata(
+                  this.appTimeNow,
+                  this.fullNameBiodata,
+                  this.imageUploadForm
                 )
                 .then(async res => {
                   if (res.data.status == "success") {
@@ -275,17 +271,12 @@ export default {
         if (res.value) {
           if (this.profileOldPassword.length > 0) {
             if (this.profileUpdatePasswordBool) {
-              await this.$axios.get(`/sanctum/csrf-cookie`).then(async () => {
+              await this.$axios.getCookies().then(async () => {
                 await this.$axios
-                  .put(
-                    `/api/user/profile/${this.appTimeNow}/?_update=password`,
-                    {
-                      old_pass: ForgeJs.encryptPassword(
-                        this.profileOldPassword
-                      ),
-                      new_pass: ForgeJs.encryptPassword(this.profileNewPassword)
-                    },
-                    this.$CredMng.axiosHeaderToken()
+                  .patchUserPassword(
+                    this.appTimeNow,
+                    ForgeJs.encryptPassword(this.profileOldPassword),
+                    ForgeJs.encryptPassword(this.profileNewPassword)
                   )
                   .then(async res => {
                     if (res.data.status == "success") {

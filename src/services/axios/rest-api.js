@@ -15,7 +15,10 @@ const RestServices = {
     postVerifyRegister: (_access) => axios.post(`/api/access/register/verify`, { _access }),
     postLostPassword: (email) => axios.post(`/api/auth/lost-password`, { email }),
     postLostPasswordAccess: (_access) => axios.post(`/api/auth/lost-password/access`, { _access }),
-    postRecoverPassword: (password, _access) => axios.post(`/api/auth/lost-password/recover`, { password, _access })
+    postRecoverPassword: (password, _access) => axios.post(`/api/auth/lost-password/recover`, { password, _access }),
+    postNewImageUserProfile: (formImage) => axios.post(`/api/user/profile?_upload=image`, formImage, CredMng.axiosHeaderToken()),
+    patchUserBiodata: (time, name, image) => axios.patch(`/api/user/profile/${time}/?_update=biodata`, { name, image }, CredMng.axiosHeaderToken()),
+    patchUserPassword: (time, old_pass, new_pass) => axios.patch(`/api/user/profile/${time}/?_update=password`, { old_pass, new_pass }, CredMng.axiosHeaderToken())
 };
 
 export default RestServices;
