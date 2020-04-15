@@ -1,9 +1,9 @@
-import axios from 'axios'
 import router from '@/router'
 import AppHelper from '@/third-party/helper/app-helper.min'
 import AppLink from '@/third-party/helper/app-link.min'
 import CredMng from '@/third-party/auth/credential-manager.min'
 import Toastr from "@/third-party/library/toastrjs.min";
+import RestServices from '@/services/axios/rest-api';
 let state = {
     thisBiodata: {
         name: "Unnamed",
@@ -18,8 +18,8 @@ let getters = {
 };
 let actions = {
     async getBiodata({ commit }) {
-        await axios.get(`/sanctum/csrf-cookie`).then(async () => {
-            let response = await axios.get(`/api/user/profile`, CredMng.axiosHeaderToken())
+        await RestServices.getCookies().then(async () => {
+            let response = await RestServices.getUserProfile()
                 .catch(() => {
                     Toastr.toastError("Please login first!"),
                         CredMng.credentialKeyRemove(),
