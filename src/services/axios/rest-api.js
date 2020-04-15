@@ -11,6 +11,7 @@ const RestServices = {
     getCredential: () => axios.get(`/api/auth/creds`, CredMng.axiosHeaderToken()),
     getUserProfile: () => axios.get(`/api/user/profile`, CredMng.axiosHeaderToken()),
     postLogin: (email, password) => axios.post(`/api/auth/login`, { email, password }),
+    postLogout: () => axios.post(`/api/auth/logout`, {}, CredMng.axiosHeaderToken()),
     postRegister: (name, email, password) => axios.post(`/api/auth/register`, { name, email, password }),
     postVerifyRegister: (_access) => axios.post(`/api/access/register/verify`, { _access }),
     postLostPassword: (email) => axios.post(`/api/auth/lost-password`, { email }),

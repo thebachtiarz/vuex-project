@@ -57,7 +57,7 @@ export default {
       }).then(async result => {
         if (result.value) {
           await this.$axios
-            .post(`/api/auth/logout`, {}, this.$CredMng.axiosHeaderToken())
+            .postLogout()
             .then(async res => {
               if (res.data.status == "success") {
                 await this.$CredMng.credentialKeyRemove();
