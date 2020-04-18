@@ -29,8 +29,8 @@
             v-model="thisPassword"
           />
           <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
+            <div class="input-group-text" @click="passwordWatch">
+              <span class="fas fa-eye" id="span-password"></span>
             </div>
           </div>
         </div>
@@ -187,6 +187,17 @@ export default {
           : (error += this.spanMessage("info", data.message));
         this.$("#view-login-msg").html(error);
         this.$("#input-submit").prop("disabled", false);
+      }
+    },
+    passwordWatch() {
+      let inputtype = this.$("#input-password").attr("type");
+      this.$("#span-password").removeClass();
+      if (inputtype == "password") {
+        this.$("#input-password").attr("type", "text");
+        this.$("#span-password").addClass("fas fa-eye-slash");
+      } else {
+        this.$("#input-password").attr("type", "password");
+        this.$("#span-password").addClass("fas fa-eye");
       }
     },
     spanMessage(color, message) {

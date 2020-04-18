@@ -57,7 +57,7 @@
                 <form
                   id="setting-biodata-image"
                   enctype="multipart/form-data"
-                  @submit="uploadImageProfile"
+                  @submit.prevent="uploadImageProfile"
                 >
                   <label for="setting-biodata-image-import">Image Profile</label>
                   <div class="custom-file">
@@ -182,8 +182,7 @@ export default {
     autoUploadImageOnChange() {
       this.$("#setting-biodata-image-submit").click();
     },
-    uploadImageProfile(e) {
-      e.preventDefault();
+    uploadImageProfile() {
       this.$axios.getCookies().then(() => {
         let formImage = new FormData(
           document.getElementById("setting-biodata-image")
