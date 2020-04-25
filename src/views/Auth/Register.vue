@@ -49,12 +49,14 @@
             v-model="thisPassword"
           />
           <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock" id="thepassword" v-on:click="passwordWatch('true')"></span>
+            <div class="input-group-text" v-on:click="passwordWatch('true')">
+              <span class="fas fa-lock" id="thepassword"></span>
             </div>
           </div>
         </div>
-        <p class="messagePassword mt-1"></p>
+        <div class="messagePassword mt-1" :v-if="msgPassword.length">
+          <h6 v-for="(msg, idx) in msgPassword" :key="idx">{{msg}}</h6>
+        </div>
         <p
           class="text-muted font-italic"
           id="password-generate-button"
@@ -65,8 +67,8 @@
             <u>generate password</u>
           </a>
         </p>
-        <div class="row">
-          <div class="col offset-7 col-5">
+        <div class="row mt-3 mb-3">
+          <div class="col offset-6 offset-md-7 col-6 col-md-5">
             <button
               type="submit"
               class="btn btn-primary btn-block text-bold"
@@ -90,8 +92,9 @@
 <script>
 import PassGen from "generate-password";
 import Swal from "sweetalert2";
-import ForgeJS from "@/third-party/library/forgejs.min.js";
-import AwSleep from "@/third-party/helper/await-sleep.min.js";
+import ForgeJS from "@/third-party/library/forgejs.min";
+import AwSleep from "@/third-party/helper/await-sleep.min";
+import RegexValidation from "@/third-party/helper/regex-validation.min";
 export default {
   name: "Register",
   methods: {
@@ -186,69 +189,29 @@ export default {
       this.$(`${goto}`).html("");
     },
     async formFieldName() {
-      let regex = /^[a-zA-Z_\s]+$/i;
-      await AwSleep.sleep(500);
-      if (this.thisName.length > 0) {
-        if (regex.test(this.thisName)) {
-          this.boolName = true;
-          this.setFieldMessage(".messageName", "success", "Name is correct");
-        } else {
-          this.boolName = false;
-          this.setFieldMessage(".messageName", "error", "Name format is wrong");
-        }
-      } else {
-        this.boolName = false;
-        this.setFieldMessage(".messageName", "error", "Name cannot be empty");
-      }
+      await AwSleep.sleep(1000);
+      let validate = RegexValidation.nameRegex(this.thisName);
+      this.boolName = validate.result;
+      this.setFieldMessage(".messageName", validate.status, validate.message);
     },
     async formFieldEmail() {
-      let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      await AwSleep.sleep(500);
-      if (this.thisEmail.length > 0) {
-        if (regex.test(this.thisEmail)) {
-          this.boolEmail = true;
-          this.setFieldMessage(".messageEmail", "success", "Email is correct");
-        } else {
-          this.boolEmail = false;
-          this.setFieldMessage(
-            ".messageEmail",
-            "error",
-            "Email format is wrong"
-          );
-        }
-      } else {
-        this.boolEmail = false;
-        this.setFieldMessage(".messageEmail", "error", "Email cannot be empty");
-      }
+      await AwSleep.sleep(1000);
+      let validate = RegexValidation.mailRegex(this.thisEmail);
+      this.boolEmail = validate.result;
+      this.setFieldMessage(".messageEmail", validate.status, validate.message);
     },
     async formFieldPassword() {
-      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
-      await AwSleep.sleep(500);
+      await AwSleep.sleep(1000);
+      let validate = RegexValidation.passRegex(this.thisPassword);
       this.$("#password-generate-button").show();
       this.passwordWatch();
-      if (this.thisPassword.length > 0) {
-        if (regex.test(this.thisPassword)) {
-          this.boolPassword = true;
-          this.setFieldMessage(
-            ".messagePassword",
-            "success",
-            "You have strong and correct password"
-          );
-        } else {
-          this.boolPassword = false;
-          this.setFieldMessage(
-            ".messagePassword",
-            "error",
-            "Password must be between 8 to 15 characters which containing at least one lowercase letter, one uppercase letter, one numeric number, and one special character"
-          );
-        }
-      } else {
-        this.boolPassword = false;
-        this.setFieldMessage(
-          ".messagePassword",
-          "error",
-          "Password cannot be empty"
-        );
+      this.$(".messagePassword").css(
+        "color",
+        `${validate.status == "success" ? "#119822" : "#C91E1E"}`
+      );
+      this.boolPassword = validate.result;
+      this.msgPassword = validate.message;
+      if (this.thisPassword.length == 0) {
         this.$("#thepassword").removeClass();
         this.$("#thepassword").addClass("fas fa-lock");
       }
@@ -302,7 +265,8 @@ export default {
       boolName: false,
       boolEmail: false,
       boolPassword: false,
-      seePassword: false
+      seePassword: false,
+      msgPassword: []
     };
   }
 };
