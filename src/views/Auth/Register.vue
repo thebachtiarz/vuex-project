@@ -90,9 +90,9 @@
 </template>
 
 <script>
-import PassGen from "generate-password";
 import Swal from "sweetalert2";
 import ForgeJS from "@/third-party/library/forgejs.min";
+import PassGenJs from "@/third-party/library/passgenjs.min";
 import AwSleep from "@/third-party/helper/await-sleep.min";
 import RegexValidation from "@/third-party/helper/regex-validation.min";
 export default {
@@ -239,13 +239,7 @@ export default {
       }
     },
     generatePassword() {
-      let password = PassGen.generate({
-        length: 10,
-        numbers: true,
-        symbols: true,
-        excludeSimilarCharacters: true
-      });
-      this.thisPassword = password;
+      this.thisPassword = PassGenJs.newGenPass();
       this.seePassword = true;
       this.$("#thepassword").removeClass();
       this.$("#input-password").attr("type", "text");

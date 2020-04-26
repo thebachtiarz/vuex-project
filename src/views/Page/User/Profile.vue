@@ -142,7 +142,9 @@
                     </div>
                   </div>
                 </div>
-                <p class="messagePassword mt-1"></p>
+                <div class="messagePassword mt-1" :v-if="profileUpdatePasswordMsg.length">
+                  <h6 v-for="(msg, idx) in profileUpdatePasswordMsg" :key="idx">{{msg}}</h6>
+                </div>
                 <p
                   class="text-muted font-italic"
                   id="password-generate-button"
@@ -167,10 +169,11 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import PassGen from "generate-password";
 import Swal from "sweetalert2";
 import AwSleep from "@/third-party/helper/await-sleep.min";
+import RegexValidation from "@/third-party/helper/regex-validation.min";
 import ForgeJs from "@/third-party/library/forgejs.min.js";
+import PassGenJs from "@/third-party/library/passgenjs.min";
 import Toastr from "@/third-party/library/toastrjs.min";
 export default {
   name: "ProfilePage",
@@ -334,34 +337,16 @@ export default {
       return errorMsg ? errorMsg : data;
     },
     async formFieldPassword() {
-      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
-      await AwSleep.sleep(500);
+      await AwSleep.sleep(1000);
+      let validate = RegexValidation.passRegex(this.profileNewPassword);
       this.$("#password-generate-button").show();
       this.passwordWatch();
-      if (this.profileNewPassword.length > 0) {
-        if (regex.test(this.profileNewPassword)) {
-          this.profileUpdatePasswordBool = true;
-          this.setFieldMessage(
-            ".messagePassword",
-            "success",
-            "You have strong and correct password"
-          );
-        } else {
-          this.profileUpdatePasswordBool = false;
-          this.setFieldMessage(
-            ".messagePassword",
-            "error",
-            "Password must be between 8 to 15 characters which containing at least one lowercase letter, one uppercase letter, one numeric number, and one special character"
-          );
-        }
-      } else {
-        this.profileUpdatePasswordBool = false;
-        this.setFieldMessage(
-          ".messagePassword",
-          "error",
-          "Password cannot be empty"
-        );
-      }
+      this.$(".messagePassword").css(
+        "color",
+        `${validate.status == "success" ? "#119822" : "#C91E1E"}`
+      );
+      this.profileUpdatePasswordBool = validate.result;
+      this.profileUpdatePasswordMsg = validate.message;
     },
     passwordWatch(toggle, inputform) {
       let inputtype = this.$(`${inputform}`).attr("type");
@@ -375,13 +360,7 @@ export default {
       }
     },
     generatePassword() {
-      let password = PassGen.generate({
-        length: 10,
-        numbers: true,
-        symbols: true,
-        excludeSimilarCharacters: true
-      });
-      this.profileNewPassword = password;
+      this.profileNewPassword = PassGenJs.newGenPass();
       this.$("#newpassword").removeClass();
       this.$("#setting-password-new").attr("type", "text");
       this.$("#newpassword").addClass("fas fa-eye-slash");
@@ -411,7 +390,8 @@ export default {
       imageUploadResult: "",
       profileOldPassword: "",
       profileNewPassword: "",
-      profileUpdatePasswordBool: false
+      profileUpdatePasswordBool: false,
+      profileUpdatePasswordMsg: []
     };
   }
 };

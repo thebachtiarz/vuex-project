@@ -17,12 +17,14 @@
             v-model="thisPassword"
           />
           <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock" id="thepassword" v-on:click="passwordWatch('true')"></span>
+            <div class="input-group-text" v-on:click="passwordWatch('true')">
+              <span class="fas fa-lock" id="thepassword"></span>
             </div>
           </div>
         </div>
-        <p class="messagePassword mt-1"></p>
+        <div class="messagePassword mt-1" :v-if="msgPassword.length">
+          <h6 v-for="(msg, idx) in msgPassword" :key="idx">{{msg}}</h6>
+        </div>
         <p
           class="text-muted font-italic"
           id="password-generate-button"
@@ -56,10 +58,11 @@
 </template>
 
 <script>
-import PassGen from "generate-password";
 import Swal from "sweetalert2";
 import AwSleep from "@/third-party/helper/await-sleep.min.js";
+import RegexValidation from "@/third-party/helper/regex-validation.min";
 import ForgeJs from "@/third-party/library/forgejs.min.js";
+import PassGenJs from "@/third-party/library/passgenjs.min";
 import Toastr from "@/third-party/library/toastrjs.min.js";
 export default {
   name: "RecoverPassword",
@@ -132,33 +135,17 @@ export default {
       });
     },
     async formFieldPassword() {
-      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
-      await AwSleep.sleep(500);
+      await AwSleep.sleep(1000);
+      let validate = RegexValidation.passRegex(this.thisPassword);
       this.$("#password-generate-button").show();
       this.passwordWatch();
-      if (this.thisPassword.length > 0) {
-        if (regex.test(this.thisPassword)) {
-          this.boolPassword = true;
-          this.setFieldMessage(
-            ".messagePassword",
-            "success",
-            "You have strong and correct password"
-          );
-        } else {
-          this.boolPassword = false;
-          this.setFieldMessage(
-            ".messagePassword",
-            "error",
-            "Password must be between 8 to 15 characters which containing at least one lowercase letter, one uppercase letter, one numeric number, and one special character"
-          );
-        }
-      } else {
-        this.boolPassword = false;
-        this.setFieldMessage(
-          ".messagePassword",
-          "error",
-          "Password cannot be empty"
-        );
+      this.$(".messagePassword").css(
+        "color",
+        `${validate.status == "success" ? "#119822" : "#C91E1E"}`
+      );
+      this.boolPassword = validate.result;
+      this.msgPassword = validate.message;
+      if (this.thisPassword.length == 0) {
         this.$("#thepassword").removeClass();
         this.$("#thepassword").addClass("fas fa-lock");
       }
@@ -186,13 +173,7 @@ export default {
       }
     },
     generatePassword() {
-      let password = PassGen.generate({
-        length: 10,
-        numbers: true,
-        symbols: true,
-        excludeSimilarCharacters: true
-      });
-      this.thisPassword = password;
+      this.thisPassword = PassGenJs.newGenPass();
       this.seePassword = true;
       this.$("#thepassword").removeClass();
       this.$("#input-password").attr("type", "text");
@@ -218,7 +199,8 @@ export default {
     return {
       tokenAccess: this.$route.params.access,
       thisPassword: "",
-      boolPassword: false
+      boolPassword: false,
+      msgPassword: []
     };
   }
 };
