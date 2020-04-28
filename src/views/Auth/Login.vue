@@ -88,6 +88,7 @@ export default {
             `Login... <i class="fas fa-spinner fa-pulse"></i>`
           )
         );
+        this.$Progress.start();
         await this.postLogin(
           this.thisEmail,
           ForgeJs.encryptPassword(this.thisPassword)
@@ -177,6 +178,7 @@ export default {
           )
         );
         await AwSleep.sleep(3000);
+        this.$Progress.finish();
         return this.$router.push({ name: "Home" });
       } else {
         let error = "";
@@ -187,6 +189,7 @@ export default {
           : (error += this.spanMessage("info", data.message));
         this.$("#view-login-msg").html(error);
         this.$("#input-submit").prop("disabled", false);
+        this.$Progress.fail();
       }
     },
     passwordWatch() {
@@ -227,6 +230,7 @@ export default {
       let err = error.toJSON();
       this.$("#view-login-msg").html(this.spanMessage("danger", err.message));
       this.$("#input-submit").prop("disabled", false);
+      this.$Progress.fail();
     }
   },
   data() {
