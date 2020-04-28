@@ -47,7 +47,7 @@ export default {
     },
     classBody() {
       if (this.boolBodyClass()) {
-        this.$("body").css("min-height", "511.6px");
+        this.$("body").css("min-height", "512.391px");
       } else {
         this.$("body").removeAttr("style");
       }
