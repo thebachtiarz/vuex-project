@@ -5,6 +5,7 @@ import store from './store'
 import JQuery from 'jquery'
 import VueMeta from "vue-meta";
 import Cookies from "js-cookie";
+import VueProgBar from "vue-progressbar"
 
 // ? Libraries
 import RestServices from '@/services/axios/rest-api'
@@ -37,6 +38,16 @@ Vue.config.productionTip = false
 
 Vue.use(VueMeta, {
   refreshOnceOnNavigation: true
+})
+
+Vue.use(VueProgBar, {
+  color: 'rgb(22,162,184)',
+  failedColor: 'rgb(220,53,69)',
+  thickness: '2px',
+  transition: { speed: '0.2s', opacity: '0.6s', termination: 300 },
+  autoRevert: true,
+  location: 'top',
+  inverse: false
 })
 
 new Vue({

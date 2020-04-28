@@ -1,5 +1,8 @@
 <template>
-  <router-view />
+  <div>
+    <router-view />
+    <vue-progress-bar></vue-progress-bar>
+  </div>
 </template>
 
 <script>
@@ -21,8 +24,12 @@ export default {
     };
   },
   created() {
+    this.$Progress.start();
     this.authCheckMiddleware();
     this.classBody();
+  },
+  mounted() {
+    this.$Progress.finish();
   },
   methods: {
     authCheckMiddleware() {
