@@ -70,10 +70,14 @@ export default {
       });
     },
     sendRequest() {
+      this.$Progress.start();
       this.$axios.getCookies().then(() => {
         this.$axios
           .postLostPassword(this.thisEmail)
           .then(async res => {
+            res.data.status == "success"
+              ? this.$Progress.finish()
+              : this.$Progress.fail();
             await Swal.fire(
               `${res.data.status == "success" ? "Success!" : "Failed!"}`,
               `${this.responseArrayMessage(res.data.message)}`,
@@ -82,6 +86,7 @@ export default {
             return this.$router.push({ name: "Login" });
           })
           .catch(async err => {
+            this.$Progress.fail();
             let error = err.toJSON();
             await Swal.fire("Oppss!", `${error.message}`, "error");
           });

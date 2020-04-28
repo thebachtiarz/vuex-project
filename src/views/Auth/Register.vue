@@ -124,6 +124,7 @@ export default {
       });
     },
     async postNewMember() {
+      this.$Progress.start();
       this.$axios
         .getCookies()
         .then(() => {
@@ -148,11 +149,15 @@ export default {
       this.$("#input-submit").click();
     },
     catchError(error) {
+      this.$Progress.fail();
       let err = error.toJSON();
       this.$("#view-login-msg").html(this.spanMessage("danger", err.message));
       this.$("#input-submit").prop("disabled", false);
     },
     async responseRegister(data) {
+      data.status == "success"
+        ? this.$Progress.finish()
+        : this.$Progress.fail();
       if (data.status == "success") {
         await Swal.fire("Success", `${data.message}`, "success");
         return this.$router.push({ name: "Login" });

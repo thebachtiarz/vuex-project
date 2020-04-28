@@ -19,8 +19,10 @@ export default {
   },
   methods: {
     async processAccess() {
+      this.$Progress.start();
       await AwSleep.sleep(500);
       if (this.tokenAccess.length != 32) {
+        this.$Progress.fail();
         await AwSleep.redirectTo("Login");
       }
       this.responseMessage("#process-message", `info`, `Processing`);
@@ -32,6 +34,9 @@ export default {
         this.$axios
           .postVerifyRegister(this.tokenAccess)
           .then(async res => {
+            res.data.status == "success"
+              ? this.$Progress.finish()
+              : this.$Progress.fail();
             this.responseMessage(
               "#process-message",
               `${res.data.status}`,
@@ -42,6 +47,7 @@ export default {
             await AwSleep.redirectTo("Login");
           })
           .catch(async err => {
+            this.$Progress.fail();
             let error = err.toJSON();
             this.responseMessage(
               "#process-message",

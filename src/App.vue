@@ -27,6 +27,11 @@ export default {
     this.$Progress.start();
     this.authCheckMiddleware();
     this.classBody();
+    this.$router.beforeEach((to, from, next) => {
+      this.$Progress.start();
+      next();
+    });
+    this.$router.afterEach(() => this.$Progress.finish());
   },
   mounted() {
     this.$Progress.finish();

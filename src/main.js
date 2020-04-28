@@ -43,14 +43,10 @@ Vue.use(VueMeta, {
 Vue.use(VueProgBar, {
   color: 'rgb(22,162,184)',
   failedColor: 'rgb(220,53,69)',
-  thickness: '2px',
-  transition: { speed: '0.2s', opacity: '0.6s', termination: 300 },
-  autoRevert: true,
-  location: 'top',
-  inverse: false
+  transition: { speed: '0.2s', opacity: '0.6s', termination: 1000 }
 })
 
-export default new Vue({
+new Vue({
   router,
   store,
   render: h => h(App)

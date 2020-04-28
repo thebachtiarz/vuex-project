@@ -71,16 +71,19 @@ export default {
   },
   methods: {
     checkAccess() {
+      this.$Progress.start();
       this.$axios.getCookies().then(() => {
         this.$axios
           .postLostPasswordAccess(this.tokenAccess)
           .then(res => {
             if (res.data.status == "error") {
+              this.$Progress.fail();
               Toastr.toastError(res.data.message);
               AwSleep.redirectTo("Login", 0);
-            }
+            } else this.$Progress.finish();
           })
           .catch(err => {
+            this.$Progress.fail();
             let error = err.toJSON();
             Toastr.toastError(error.message);
             AwSleep.redirectTo("Login", 0);
@@ -114,6 +117,7 @@ export default {
       });
     },
     postNewPassword() {
+      this.$Progress.start();
       this.$axios.getCookies().then(() => {
         this.$axios
           .postRecoverPassword(
@@ -126,9 +130,13 @@ export default {
               `${res.data.message}`,
               `${res.data.status == "success" ? "success" : "error"}`
             );
+            res.data.status == "success"
+              ? this.$Progress.finish()
+              : this.$Progress.fail();
             return this.$router.push({ name: "Login" });
           })
           .catch(err => {
+            this.$Progress.fail();
             let error = err.toJSON();
             Swal.fire(`Failed!`, `${error.message}`, "error");
           });

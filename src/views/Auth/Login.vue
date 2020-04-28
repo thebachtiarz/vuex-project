@@ -126,6 +126,7 @@ export default {
           `Auto Login... <i class="fas fa-spinner fa-pulse"></i>`
         )
       );
+      this.$Progress.start();
       await AwSleep.sleep(2000);
       await this.$axios
         .getCookies()
@@ -147,6 +148,7 @@ export default {
                 )
               );
               await AwSleep.sleep(3000);
+              this.$Progress.finish();
               return this.$router.push({ name: "Home" });
             })
             .catch(

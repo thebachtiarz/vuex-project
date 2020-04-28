@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import app from '../main';
 
 // ? Auth
 import LoginPage from '@/views/Auth/Login';
@@ -80,17 +79,6 @@ const routes = [
 const router = new VueRouter({
   // mode: 'history',
   routes
-})
-
-router.beforeEach((to, from, next) => {
-  app.$Progress.start();
-  console.log(app);
-  next();
-})
-
-router.afterEach((to, from) => {
-  app.$Progress.finish();
-  return from;
 })
 
 export default router
