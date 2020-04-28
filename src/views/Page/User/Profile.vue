@@ -186,6 +186,7 @@ export default {
       this.$("#setting-biodata-image-submit").click();
     },
     uploadImageProfile() {
+      this.$Progress.start();
       this.$axios.getCookies().then(() => {
         let formImage = new FormData(
           document.getElementById("setting-biodata-image")
@@ -193,6 +194,9 @@ export default {
         this.$axios
           .postNewImageUserProfile(formImage)
           .then(res => {
+            res.data.status == "success"
+              ? this.$Progress.finish()
+              : this.$Progress.fail();
             if (res.data.status == "success") {
               this.imageUploadOrigin = res.data.response_data[0].origin_name;
               this.imageUploadForm = res.data.response_data[0].img_name;
@@ -205,6 +209,7 @@ export default {
             }
           })
           .catch(err => {
+            this.$Progress.fail();
             let error = err.toJSON();
             Toastr.toastError(error.message);
           });
@@ -222,6 +227,7 @@ export default {
       }).then(async result => {
         if (result.value) {
           if (this.fullNameBiodata) {
+            this.$Progress.start();
             this.$axios.getCookies().then(() => {
               this.$axios
                 .patchUserBiodata(
@@ -230,6 +236,9 @@ export default {
                   this.imageUploadForm
                 )
                 .then(async res => {
+                  res.data.status == "success"
+                    ? this.$Progress.finish()
+                    : this.$Progress.fail();
                   if (res.data.status == "success") {
                     await Swal.fire(
                       "Success",
@@ -249,6 +258,7 @@ export default {
                   }
                 })
                 .catch(err => {
+                  this.$Progress.fail();
                   let error = err.toJSON();
                   Swal.fire("Sorry", `${error.message}`, "error");
                 });
@@ -273,6 +283,7 @@ export default {
         if (res.value) {
           if (this.profileOldPassword.length > 0) {
             if (this.profileUpdatePasswordBool) {
+              this.$Progress.start();
               await this.$axios.getCookies().then(async () => {
                 await this.$axios
                   .patchUserPassword(
@@ -281,6 +292,9 @@ export default {
                     ForgeJs.encryptPassword(this.profileNewPassword)
                   )
                   .then(async res => {
+                    res.data.status == "success"
+                      ? this.$Progress.finish()
+                      : this.$Progress.fail();
                     if (res.data.status == "success") {
                       await Swal.fire(
                         "Success",
@@ -296,6 +310,7 @@ export default {
                     }
                   })
                   .catch(err => {
+                    this.$Progress.fail();
                     let error = err.toJSON();
                     Swal.fire("Sorry", `${error.message}`, "error");
                   });
