@@ -35,7 +35,7 @@
             <u>generate password</u>
           </a>
         </p>
-        <div class="row">
+        <div class="row mt-3">
           <div class="col-12">
             <button
               type="submit"
@@ -84,8 +84,8 @@ export default {
           })
           .catch(err => {
             this.$Progress.fail();
-            let error = err.toJSON();
-            Toastr.toastError(error.message);
+            Toastr.toastError("Opps!, something went wrong");
+            console.log(err);
             AwSleep.redirectTo("Login", 0);
           });
       });
@@ -125,20 +125,20 @@ export default {
             this.tokenAccess
           )
           .then(async res => {
+            res.data.status == "success"
+              ? this.$Progress.finish()
+              : this.$Progress.fail();
             await Swal.fire(
               `${res.data.status == "success" ? "Success!" : "Failed!"}`,
               `${res.data.message}`,
               `${res.data.status == "success" ? "success" : "error"}`
             );
-            res.data.status == "success"
-              ? this.$Progress.finish()
-              : this.$Progress.fail();
             return this.$router.push({ name: "Login" });
           })
           .catch(err => {
             this.$Progress.fail();
-            let error = err.toJSON();
-            Swal.fire(`Failed!`, `${error.message}`, "error");
+            Swal.fire(`Failed!`, `Opps!, something went wrong`, "error");
+            console.log(err);
           });
       });
     },

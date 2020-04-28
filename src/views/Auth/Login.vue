@@ -183,6 +183,7 @@ export default {
         this.$Progress.finish();
         return this.$router.push({ name: "Home" });
       } else {
+        this.$Progress.fail();
         let error = "";
         data.message.email
           ? data.message.email.forEach(
@@ -191,7 +192,6 @@ export default {
           : (error += this.spanMessage("info", data.message));
         this.$("#view-login-msg").html(error);
         this.$("#input-submit").prop("disabled", false);
-        this.$Progress.fail();
       }
     },
     passwordWatch() {
@@ -229,10 +229,12 @@ export default {
       this.$(".theInput").removeClass("text-danger");
     },
     catchError(error) {
-      let err = error.toJSON();
-      this.$("#view-login-msg").html(this.spanMessage("danger", err.message));
-      this.$("#input-submit").prop("disabled", false);
       this.$Progress.fail();
+      this.$("#view-login-msg").html(
+        this.spanMessage("danger", "Opps!, something went wrong")
+      );
+      this.$("#input-submit").prop("disabled", false);
+      console.log(error);
     }
   },
   data() {

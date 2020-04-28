@@ -150,9 +150,9 @@ export default {
     },
     catchError(error) {
       this.$Progress.fail();
-      let err = error.toJSON();
-      this.$("#view-login-msg").html(this.spanMessage("danger", err.message));
+      this.$("#view-login-msg").html(this.spanMessage("danger", "Opps!, something went wrong"));
       this.$("#input-submit").prop("disabled", false);
+      console.log(error);
     },
     async responseRegister(data) {
       data.status == "success"

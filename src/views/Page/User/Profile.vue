@@ -208,11 +208,7 @@ export default {
               Toastr.toastError(`${res.data.message._image[0]}`);
             }
           })
-          .catch(err => {
-            this.$Progress.fail();
-            let error = err.toJSON();
-            Toastr.toastError(error.message);
-          });
+          .catch(err => this.catchError("toast", err));
       });
     },
     biodataUpdatePost() {
@@ -257,11 +253,7 @@ export default {
                     );
                   }
                 })
-                .catch(err => {
-                  this.$Progress.fail();
-                  let error = err.toJSON();
-                  Swal.fire("Sorry", `${error.message}`, "error");
-                });
+                .catch(err => this.catchError("swal", err));
             });
           }
           if (!this.fullNameBiodata) {
@@ -309,11 +301,7 @@ export default {
                       );
                     }
                   })
-                  .catch(err => {
-                    this.$Progress.fail();
-                    let error = err.toJSON();
-                    Swal.fire("Sorry", `${error.message}`, "error");
-                  });
+                  .catch(err => this.catchError("swal", err));
               });
             } else {
               Swal.fire(
@@ -389,6 +377,13 @@ export default {
     },
     gotoNewPassword() {
       this.$("#setting-password-new").focus();
+    },
+    catchError(alertType, err) {
+      this.$Progress.fail();
+      alertType == "swal"
+        ? Swal.fire("Sorry", `Opps!, something went wrong`, "error")
+        : Toastr.toastError("Opps!, something went wrong");
+      console.log(err);
     }
   },
   watch: {

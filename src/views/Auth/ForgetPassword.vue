@@ -87,8 +87,8 @@ export default {
           })
           .catch(async err => {
             this.$Progress.fail();
-            let error = err.toJSON();
-            await Swal.fire("Oppss!", `${error.message}`, "error");
+            console.log(err);
+            await Swal.fire("Oppss!", `Opps!, something went wrong`, "error");
           });
       });
     },

@@ -32,14 +32,17 @@ export default {
     Footer
   },
   async created() {
-    if (!this.$CredMng.credentialKeyTake()) {
-      return await this.$router.push({ name: "Login" });
-    } else {
-      this.getBiodata();
-    }
+    this.isAuthenticated();
   },
   methods: {
-    ...mapActions(["getBiodata"])
+    ...mapActions(["getBiodata"]),
+    isAuthenticated() {
+      if (!this.$CredMng.credentialKeyTake()) {
+        return this.$router.push({ name: "Login" });
+      } else {
+        this.getBiodata();
+      }
+    }
   },
   watch: {
     $route() {

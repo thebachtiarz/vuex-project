@@ -30,6 +30,7 @@ export default {
       this.verifyAccess();
     },
     verifyAccess() {
+      this.$Progress.start();
       this.$axios.getCookies().then(() => {
         this.$axios
           .postVerifyRegister(this.tokenAccess)
@@ -48,12 +49,12 @@ export default {
           })
           .catch(async err => {
             this.$Progress.fail();
-            let error = err.toJSON();
             this.responseMessage(
               "#process-message",
               `error`,
-              `${error.message}`
+              `Opps!, something went wrong`
             );
+            console.log(err);
             await AwSleep.sleep(2000);
             this.responseMessage("#process-message", `info`, `Redirect`);
             await AwSleep.redirectTo("Login");
