@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :class="this.boolBodyClass() ? `row` : ``">
+    <vue-progress-bar />
     <router-view />
-    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 
@@ -29,6 +29,7 @@ export default {
     this.classBody();
     this.$router.beforeEach((to, from, next) => {
       this.$Progress.start();
+      if (to.name == "PageNotFound") this.$Progress.fail();
       next();
     });
     this.$router.afterEach(() => this.$Progress.finish());
@@ -46,11 +47,8 @@ export default {
       }
     },
     classBody() {
-      if (this.boolBodyClass()) {
-        this.$("body").css("min-height", "512.391px");
-      } else {
-        this.$("body").removeAttr("style");
-      }
+      if (this.boolBodyClass()) this.$("body").css("min-height", "512.391px");
+      else this.$("body").removeAttr("style");
     },
     boolBodyClass() {
       let arrNameRoute = this.$AuthMid.getRouteUnprotected();

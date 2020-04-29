@@ -1,5 +1,5 @@
 <template>
-  <div class="login-box">
+  <div class="login-box col-12">
     <div class="login-logo text-white">{{this.$AppHelper.appName()}}</div>
     <div class="card">
       <div class="card-body login-card-body">
